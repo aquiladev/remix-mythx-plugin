@@ -1,0 +1,15 @@
+[
+    {
+      "issues": [],
+      "sourceType": "raw-bytecode",
+      "sourceFormat": "evm-byzantium-bytecode",
+      "sourceList": [
+        "0x913432c68299e04ae9ad6c1daa96aa5b883408569057daa8ba9cb5fcd56167c3",
+        "0xf5a025aa1836ecb6d628d1ccf313a6c1f12566b798a7214750c4b83317fc6dba"
+      ],
+      "meta": {
+        "coveredInstructions": 155,
+        "coveredPaths": 10
+      }
+    }
+  ]

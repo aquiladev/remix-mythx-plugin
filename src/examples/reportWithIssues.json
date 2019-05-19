@@ -1,0 +1,109 @@
+[
+    {
+        "issues": [
+            {
+                "swcID": "SWC-101",
+                "swcTitle": "Integer Overflow and Underflow",
+                "description": {
+                    "head": "integer overflow",
+                    "tail": "Integer overflows are often not intended. Make sure your contracts take appropriate precautions when performing arithmetic operations."
+                },
+                "severity": "Medium",
+                "locations": [
+                    {
+                        "sourceMap": "24:1:1"
+                    }
+                ],
+                "extra": {
+                    "testCase": {
+                        "initialState": {
+                            "accounts": {
+                                "0x6666666666666666666666666666666666666660": {
+                                    "nonce": 1,
+                                    "balance": "0x00000000000000000000000000000000000000ffffffffffffffffffffffffff",
+                                    "code": "",
+                                    "storage": {}
+                                },
+                                "0x6666666666666666666666666666666666666661": {
+                                    "nonce": 1,
+                                    "balance": "0x00000000000000000000000000000000000000ffffffffffffffffffffffffff",
+                                    "code": "0x00",
+                                    "storage": {}
+                                },
+                                "0x6666666666666666666666666666666666666662": {
+                                    "nonce": 1,
+                                    "balance": "0x00000000000000000000000000000000000000ffffffffffffffffffffffffff",
+                                    "code": "0xfd",
+                                    "storage": {}
+                                },
+                                "0x6666666666666666666666666666666666666663": {
+                                    "nonce": 1,
+                                    "balance": "0x00000000000000000000000000000000000000ffffffffffffffffffffffffff",
+                                    "code": "0x608060405260005600a165627a7a72305820466f8a1bdae15c60b8e998fe04836ef505803cfbd8edd29bd4679531357576530029",
+                                    "storage": {}
+                                },
+                                "0x6666666666666666666666666666666666666664": {
+                                    "nonce": 1,
+                                    "balance": "0x00000000000000000000000000000000000000ffffffffffffffffffffffffff",
+                                    "code": "0x60806040527366666666666666666666666666666666666666643081146038578073ffffffffffffffffffffffffffffffffffffffff16ff5b5000fea165627a7a72305820ebf117db15ae50145ae169199f2a837a03ce5cd63b0b77fa0935b347011805f40029",
+                                    "storage": {}
+                                },
+                                "0x8af6a7af30d840ba137e8f3f34d54cfb8beba6e2": {
+                                    "nonce": 1,
+                                    "balance": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                                    "code": "0x60606040523615610053576000357c01000000000000000000000000000000000000000000000000000000009004806329b5b30c146100b657806341c0e1b5146100d5578063e5225381146100e257610053565b6100b45b60003411156100b15760583373ffffffffffffffffffffffffffffffffffffffff167f90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15346040518082815260200191505060405180910390a35b5b565b005b6100d3600480359060200180359060200180359060200150610249565b005b6100e06004506100ef565b005b6100ed600450610183565b005b600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141561018057600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16ff5b5b565b600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141561024657600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1660003073ffffffffffffffffffffffffffffffffffffffff1631604051809050600060405180830381858888f19350505050505b5b565b6000600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141561032c578390508073ffffffffffffffffffffffffffffffffffffffff1663a9059cbb8484604051837c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff168152602001828152602001925050506000604051808303816000876161da5a03f115610002575050505b5b5050505056",
+                                    "storage": {
+                                        "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000cccccccccccccccccccccccccccccccccccccccc"
+                                    }
+                                },
+                                "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+                                    "nonce": 0,
+                                    "balance": "0x00000000000000000000ffffffffffffffffffffffffffffffffffffffffffff",
+                                    "code": "",
+                                    "storage": {}
+                                },
+                                "0xcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb": {
+                                    "nonce": 0,
+                                    "balance": "0x000000000000000000000000000000000000000000000000002110268d7c8000",
+                                    "code": "",
+                                    "storage": {}
+                                },
+                                "0xcccccccccccccccccccccccccccccccccccccccc": {
+                                    "nonce": 1,
+                                    "balance": "0x00000000000000000000ffffffffffffffffffffffffffffffdeefd972837fff",
+                                    "code": "",
+                                    "storage": {}
+                                }
+                            }
+                        },
+                        "steps": [
+                            {
+                                "address": "0x8af6a7af30d840ba137e8f3f34d54cfb8beba6e2",
+                                "gasLimit": "0x7d00",
+                                "gasPrice": "0x8aeb81494",
+                                "input": "0x29b5b30c00b4000000000000000000000000000000b400000000000000000000000000000000000000000000000000000000000020a3a65005d475a6aaaaaaaaaaaaaa5000000000000000000000000000000000000000000000f3000000000000000000",
+                                "origin": "0xcccccccccccccccccccccccccccccccccccccccc",
+                                "value": "0x35",
+                                "blockCoinbase": "0xcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb",
+                                "blockDifficulty": "0xa7d7343662ea2",
+                                "blockGasLimit": "0x7d0000",
+                                "blockNumber": "0x661a55",
+                                "blockTime": "0x5be99aa8"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "sourceType": "raw-bytecode",
+        "sourceFormat": "evm-byzantium-bytecode",
+        "sourceList": [
+            "browser/Ownable.sol",
+            "browser/ballot.sol"
+        ],
+        "meta": {
+            "coveredInstructions": 291,
+            "coveredPaths": 12
+        }
+    }
+]

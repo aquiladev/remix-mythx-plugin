@@ -4,11 +4,14 @@ import armlet from 'armlet';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
+import { formatIssues } from './lib/report';
+
 const storageKey = 'remix-mythx-plugin';
 const TRIAL_CREDS = {
   address: '0x0000000000000000000000000000000000000000',
   pwd: 'trial'
 };
+let client = {};
 
 class App extends React.Component {
   constructor(props) {
@@ -22,9 +25,10 @@ class App extends React.Component {
       pwd: settings.pwd || TRIAL_CREDS.pwd,
       compilation: {},
       selected: '',
+      isAnalyzig: false,
       analysis: {},
-      error: '',
-      isAnalyzig: false
+      report: {},
+      error: ''
     };
 
     this.saveCredentials = this.saveCredentials.bind(this);
@@ -32,9 +36,9 @@ class App extends React.Component {
     this.getContractList = this.getContractList.bind(this);
 
     const devMode = { port: 8000 }
-    const client = createIframeClient({ customApi: remixApi, devMode });
+    client = createIframeClient({ customApi: remixApi, devMode });
     client.on('solidity', 'compilationFinished', (target, source, version, data) => {
-      const list = Object.keys(data.contracts[target])
+      const list = Object.keys(data.contracts[target]);
       this.setState({
         compilation: {
           target,
@@ -52,50 +56,108 @@ class App extends React.Component {
     localStorage.setItem(storageKey, JSON.stringify({ address, pwd }));
   }
 
-  analyze() {
-    const { address, pwd, compilation, selected } = this.state;
-    const { data = {} } = compilation;
-    const { contracts = [] } = data;
+  async analyze() {
+    const { address, pwd, compilation } = this.state;
 
-    const client = new armlet.Client(
+    const mythXClient = new armlet.Client(
       {
         ethAddress: address,
         password: pwd,
       });
-
-    var bytecode = contracts[compilation.target][selected].evm.bytecode;
-    const request = {
-      "contractName": selected,
-      "bytecode": bytecode.object,
-      "sourceMap": bytecode.sourceMap,
-      "analysisMode": "quick"
-    };
 
     this.setState({
       analysis: {},
       error: '',
       isAnalyzig: true
     });
-    client.analyzeWithStatus(
+    await client.editor.discardHighlight();
+    mythXClient.analyzeWithStatus(
       {
-        "data": request,
+        "data": this.getRequestData(),
         "clientToolName": "remythx"
       })
       .then(result => {
+        console.log("RESULT", result);
+
         this.setState({
           analysis: result,
           error: '',
           isAnalyzig: false
         });
-        console.log("RESULT", result);
+
+        this.handleResult(compilation.source, result);
       }).catch(err => {
+        console.log("ERROR", err);
+
         this.setState({
-          error: err,
+          error: err.message,
           analysis: {},
           isAnalyzig: false
         });
-        console.log("ERROR", err);
-      })
+      });
+    // const result = require('./examples/reportWithIssues.json');
+    // this.handleResult(compilation.source, result);
+  }
+
+  getRequestData() {
+    const { compilation, selected } = this.state;
+    const { data = {}, source = {} } = compilation;
+    const { contracts = [] } = data;
+
+    var bytecode = contracts[compilation.target][selected].evm.bytecode;
+    var deployedBytecode = contracts[compilation.target][selected].evm.deployedBytecode;
+    const request = {
+      contractName: selected,
+      bytecode: bytecode.object,
+      sourceMap: bytecode.sourceMap,
+      deployedBytecode: deployedBytecode.object,
+      deployedSourceMap: deployedBytecode.sourceMap,
+      analysisMode: "quick",
+      mainSource: compilation.target,
+      sourceList: Object.keys(source.sources),
+      sources: {}
+    };
+
+    for (let key in source.sources) {
+      if (source.sources.hasOwnProperty(key)) {
+        request.sources[key] = { source: source.sources[key].content };
+      }
+    }
+
+    return request;
+  }
+
+  handleResult(data, result) {
+    const { compilation } = this.state;
+    const uniqueIssues = formatIssues(data, result);
+
+    if (uniqueIssues.length === 0) {
+      this.setState({
+        report: {
+          message: `✔ No errors/warnings found in ${compilation.target}`
+        }
+      });
+    } else {
+      this.highlightIssues(uniqueIssues);
+      this.setState({
+        report: {
+          list: uniqueIssues
+        }
+      });
+    }
+  }
+
+  highlightIssues(issues) {
+    issues.forEach(issue => {
+      issue.messages.forEach(async m => {
+        const position = {
+          start: { line: m.line, column: m.column },
+          end: { line: m.endLine, column: m.endCol }
+        }
+        const color = m.severity === 1 ? '#ffd300' : '#ff0000';
+        await client.editor.highlight(position, issue.filePath, color);
+      });
+    });
   }
 
   getContractList() {
@@ -112,7 +174,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { compilation, selected, isAnalyzig, error } = this.state;
+    const { compilation, selected, isAnalyzig, error, report } = this.state;
 
     return (
       <div className="container">
@@ -193,6 +255,53 @@ class App extends React.Component {
                 <div className="alert alert-danger w-100" role="alert">
                   {error}
                 </div>
+              </div>
+            </div> : null
+        }
+        {
+          report.message ?
+            <div className="row mt-3">
+              <div className="col-md-6 offset-md-3">
+                <div className="alert alert-success w-100" role="alert">
+                  {report.message}
+                </div>
+              </div>
+            </div> : null
+        }
+        {
+          report.list ?
+            <div className="row mt-3">
+              <div className="col-md-6 offset-md-3">
+                {
+                  report.list.map((x, i) => {
+                    const problemCount = x.errorCount + x.warningCount;
+                    const summary = (amount, caption) => {
+                      return `${amount} ${amount === 1 ? caption : `${caption}s`}`;
+                    };
+                    return (
+                      <div key={i} className="border-bottom pt-2 pb-2">
+                        <div>{x.filePath}</div>
+                        {
+                          x.messages.map((m, j) => {
+                            const mType = (severity) => {
+                              return severity === 1 ? 'warning' : 'error';
+                            };
+
+                            return (
+                              <div key={j} className='pl-3'>
+                                {`${m.line}:${m.column} ${mType(m.severity)}  ${m.message} `}
+                                <a href={m.ruleId} target='_blank' rel="noopener noreferrer">{m.ruleId}</a>
+                              </div>
+                            );
+                          })
+                        }
+                        <div>
+                          {`✖ ${summary(problemCount, 'problem')} (${summary(x.errorCount, 'error')}, ${summary(x.warningCount, 'warning')})`}
+                        </div>
+                      </div>
+                    );
+                  })
+                }
               </div>
             </div> : null
         }
