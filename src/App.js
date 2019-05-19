@@ -85,12 +85,13 @@ class App extends React.Component {
           isAnalyzig: false
         });
 
-        this.handleResult(compilation.source, result);
+        const { issues } = result;
+        this.handleResult(compilation.source, issues);
       }).catch(err => {
         console.log("ERROR", err);
 
         this.setState({
-          error: err.message,
+          error: err.message || err,
           analysis: {},
           isAnalyzig: false
         });
@@ -138,26 +139,12 @@ class App extends React.Component {
         }
       });
     } else {
-      this.highlightIssues(uniqueIssues);
       this.setState({
         report: {
           list: uniqueIssues
         }
       });
     }
-  }
-
-  highlightIssues(issues) {
-    issues.forEach(issue => {
-      issue.messages.forEach(async m => {
-        const position = {
-          start: { line: m.line, column: m.column },
-          end: { line: m.endLine, column: m.endCol }
-        }
-        const color = m.severity === 1 ? '#ffd300' : '#ff0000';
-        await client.editor.highlight(position, issue.filePath, color);
-      });
-    });
   }
 
   getContractList() {
@@ -171,6 +158,15 @@ class App extends React.Component {
         path: `${compilation.target}::${x}`
       }
     });
+  }
+
+  async highlightIssue(issue, message) {
+    const position = {
+      start: { line: message.line, column: message.column },
+      end: { line: message.endLine, column: message.endCol }
+    }
+    const color = message.severity === 1 ? '#ffd300' : '#ff0000';
+    await client.editor.highlight(position, issue.filePath, color);
   }
 
   render() {
@@ -283,14 +279,18 @@ class App extends React.Component {
                         <div>{x.filePath}</div>
                         {
                           x.messages.map((m, j) => {
+                            console.log(m)
                             const mType = (severity) => {
                               return severity === 1 ? 'warning' : 'error';
                             };
 
                             return (
-                              <div key={j} className='pl-3'>
-                                {`${m.line}:${m.column} ${mType(m.severity)}  ${m.message} `}
-                                <a href={m.ruleId} target='_blank' rel="noopener noreferrer">{m.ruleId}</a>
+                              <div key={j}
+                                className='pl-3'
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => { this.highlightIssue(x, m); }}>
+                                {`${m.line + 1}:${m.column} ${mType(m.severity)} ${m.message} `}
+                                <a href={m.ruleId} target='_blank' rel="noopener noreferrer">[SWC]</a>
                               </div>
                             );
                           })

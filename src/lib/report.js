@@ -10,20 +10,6 @@ const mythx2Severity = {
 const decoder = new SourceMappingDecoder();
 
 /**
- * @returns ESLint formatter module
- */
-export const getFormatter = () => {
-  try {
-    return require('eslint/lib/formatters/stylish');
-  } catch (ex) {
-    ex.message = `\nThere was a problem loading formatter option: stylish \nError: ${
-      ex.message
-      }`;
-    throw ex;
-  }
-};
-
-/**
  * Turn a srcmap entry (the thing between semicolons) into a line and
  * column location.
  * We make use of this.sourceMappingDecoder of this class to make
@@ -40,14 +26,6 @@ const textSrcEntry2lineColumn = (srcEntry, lineBreakPositions) => {
     start: parseInt(ary[0], 10),
   };
   const loc = decoder.convertOffsetToLineColumn(sourceLocation, lineBreakPositions);
-  // FIXME: note we are lossy in that we don't return the end location
-  if (loc.start) {
-    // Adjust because routines starts lines at 0 rather than 1.
-    loc.start.line++;
-  }
-  if (loc.end) {
-    loc.end.line++;
-  }
   return [loc.start, loc.end];
 };
 
