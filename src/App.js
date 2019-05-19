@@ -77,8 +77,6 @@ class App extends React.Component {
         "clientToolName": "remythx"
       })
       .then(result => {
-        console.log("RESULT", result);
-
         this.setState({
           analysis: result,
           error: '',
@@ -88,8 +86,6 @@ class App extends React.Component {
         const { issues } = result;
         this.handleResult(compilation.source, issues);
       }).catch(err => {
-        console.log("ERROR", err);
-
         this.setState({
           error: err.message || err,
           analysis: {},
@@ -279,7 +275,6 @@ class App extends React.Component {
                         <div>{x.filePath}</div>
                         {
                           x.messages.map((m, j) => {
-                            console.log(m)
                             const mType = (severity) => {
                               return severity === 1 ? 'warning' : 'error';
                             };
