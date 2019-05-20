@@ -120,6 +120,7 @@ const convertMythXReport2EsIssue = (report, data) => {
   const { issues, sourceList } = report;
   const results = {};
 
+  // eslint-disable-next-line array-callback-return
   issues.map(issue => {
     const sourceIndex = getSourceIndex(issue);
 
