@@ -1,1 +1,1 @@
-# remix-mythx-plugin
+# Remix MythX plugin
