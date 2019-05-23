@@ -39,13 +39,15 @@ const textSrcEntry2lineColumn = (srcEntry, lineBreakPositions) => {
  * - fatal,
  * - line,
  * - message,
+ * - description,
  * - ruleId,
+ * - ruleLink,
  * - severity
  *
  * but a MythX JSON report has these fields:
  *
  * - description.head
- * - description.tail,
+ * - description.tail
  * - locations
  * - severity
  * - swcId
@@ -66,8 +68,10 @@ const issue2EsLint = (issue, source) => {
 
   const esIssue = {
     fatal: false,
-    ruleId: swcLink,
+    ruleId: issue.swcID,
+    ruleLink: swcLink,
     message: `${issue.description.head}`,
+    description: `${issue.description.tail}`,
     severity: mythx2Severity[issue.severity] || 1,
     mythXseverity: issue.severity,
     line: -1,

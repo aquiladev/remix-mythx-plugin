@@ -35,7 +35,7 @@ class App extends React.Component {
     this.analyze = this.analyze.bind(this);
     this.getContractList = this.getContractList.bind(this);
 
-    const devMode = { port: 8080  }
+    const devMode = { port: 8080 }
     client = createIframeClient({ customApi: remixApi, devMode });
     client.on('solidity', 'compilationFinished', (target, source, version, data) => {
       const list = Object.keys(data.contracts[target]);
@@ -275,17 +275,15 @@ class App extends React.Component {
                         <div>{x.filePath}</div>
                         {
                           x.messages.map((m, j) => {
-                            const mType = (severity) => {
-                              return severity === 1 ? 'warning' : 'error';
-                            };
-
                             return (
-                              <div key={j}
-                                className='pl-3'
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => { this.highlightIssue(x, m); }}>
-                                {`${m.line + 1}:${m.column} ${mType(m.severity)} ${m.message} `}
-                                <a href={m.ruleId} target='_blank' rel="noopener noreferrer">[SWC]</a>
+                              <div key={j} className="pl-3">
+                                <button type="button"
+                                  className="btn btn-link p-0 pr-1"
+                                  onClick={() => { this.highlightIssue(x, m); }}>
+                                  {`[${m.line + 1}:${m.column}]`}
+                                </button>
+                                <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
+                                <a href={m.ruleLink} className="pl-1">[{m.ruleId}]</a>
                               </div>
                             );
                           })
