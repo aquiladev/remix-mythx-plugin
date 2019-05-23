@@ -35,7 +35,7 @@ class App extends React.Component {
     this.analyze = this.analyze.bind(this);
     this.getContractList = this.getContractList.bind(this);
 
-    const devMode = { port: 8000 }
+    const devMode = { port: 8080  }
     client = createIframeClient({ customApi: remixApi, devMode });
     client.on('solidity', 'compilationFinished', (target, source, version, data) => {
       const list = Object.keys(data.contracts[target]);
