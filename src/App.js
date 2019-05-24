@@ -283,7 +283,11 @@ class App extends React.Component {
                                   {`[${m.line + 1}:${m.column}]`}
                                 </button>
                                 <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
-                                <a href={m.ruleLink} className="pl-1">[{m.ruleId}]</a>
+                                {
+                                  m.ruleId ?
+                                    <a href={m.ruleLink} className="pl-1">[{m.ruleId}]</a> :
+                                    null
+                                }
                               </div>
                             );
                           })
