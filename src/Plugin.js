@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import armlet from 'armlet';
+import { Tooltip } from 'reactstrap';
 
 import { formatIssues } from './lib/report';
+import Report from './Report';
+import info from './images/info.svg';
 
 const storageKey = 'remix-mythx-plugin';
 const TRIAL_CREDS = {
@@ -25,12 +28,16 @@ class Plugin extends React.Component {
       isAnalyzig: false,
       analysis: {},
       report: {},
-      error: ''
+      error: '',
+      infoTooltipOpen: false
     };
 
     this.saveCredentials = this.saveCredentials.bind(this);
     this.analyze = this.analyze.bind(this);
+    this.getRequestData = this.getRequestData.bind(this);
+    this.handleResult = this.handleResult.bind(this);
     this.getContractList = this.getContractList.bind(this);
+    this.highlightIssue = this.highlightIssue.bind(this);
 
     this.props.client.on('solidity', 'compilationFinished', (target, source, version, data) => {
       const list = Object.keys(data.contracts[target]);
@@ -51,7 +58,7 @@ class Plugin extends React.Component {
     localStorage.setItem(storageKey, JSON.stringify({ address, pwd }));
   }
 
-  async analyze() {
+  analyze = async () => {
     const { address, pwd, compilation } = this.state;
 
     const mythXClient = new armlet.Client(
@@ -167,6 +174,19 @@ class Plugin extends React.Component {
       <div className="container">
         <div className="row border-bottom pb-3">
           <div className="col-md-6 offset-md-3">
+            <div>
+              Credentials
+              <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26 }} id="cred_info" />
+              <Tooltip placement="right"
+                isOpen={this.state.infoTooltipOpen}
+                autohide={false}
+                target="cred_info"
+                toggle={() => { this.setState({ infoTooltipOpen: !this.state.infoTooltipOpen }); }}>
+                In order to use MythX APIs you need to have credentials.
+                You can use the trial credential, but analysis's result will be limited.
+                In order to get credential you need to <a href="https://mythx.io/" target="_blank" rel="noopener noreferrer" className="text-nowrap">sign up</a>
+              </Tooltip>
+            </div>
             <form>
               <div className="form-group">
                 <label htmlFor="address">Address</label>
@@ -228,6 +248,14 @@ class Plugin extends React.Component {
                         <span>Analyze</span>
                     }
                   </button>
+                  <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26 }} id="analysis_info" />
+                  <Tooltip placement="right"
+                    isOpen={this.state.analysisTooltipOpen}
+                    autohide={true}
+                    target="analysis_info"
+                    toggle={() => { this.setState({ analysisTooltipOpen: !this.state.analysisTooltipOpen }); }}>
+                    Analysis can take couple of minutes
+                  </Tooltip>
                 </form> :
                 <div className="alert alert-warning w-100" role="alert">
                   You need to compile your contract first!
@@ -245,58 +273,7 @@ class Plugin extends React.Component {
               </div>
             </div> : null
         }
-        {
-          report.message ?
-            <div className="row mt-3">
-              <div className="col-md-6 offset-md-3">
-                <div className="alert alert-success w-100" role="alert">
-                  {report.message}
-                </div>
-              </div>
-            </div> : null
-        }
-        {
-          report.list ?
-            <div className="row mt-3">
-              <div className="col-md-6 offset-md-3">
-                {
-                  report.list.map((x, i) => {
-                    const problemCount = x.errorCount + x.warningCount;
-                    const summary = (amount, caption) => {
-                      return `${amount} ${amount === 1 ? caption : `${caption}s`}`;
-                    };
-                    return (
-                      <div key={i} className="border-bottom pt-2 pb-2">
-                        <div>{x.filePath}</div>
-                        {
-                          x.messages.map((m, j) => {
-                            return (
-                              <div key={j} className="pl-3">
-                                <button type="button"
-                                  className="btn btn-link p-0 pr-1"
-                                  onClick={() => { this.highlightIssue(x, m); }}>
-                                  {`[${m.line + 1}:${m.column}]`}
-                                </button>
-                                <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
-                                {
-                                  m.ruleId ?
-                                    <a href={m.ruleLink} className="pl-1">[{m.ruleId}]</a> :
-                                    null
-                                }
-                              </div>
-                            );
-                          })
-                        }
-                        <div>
-                          {`✖ ${summary(problemCount, 'problem')} (${summary(x.errorCount, 'error')}, ${summary(x.warningCount, 'warning')})`}
-                        </div>
-                      </div>
-                    );
-                  })
-                }
-              </div>
-            </div> : null
-        }
+        <Report report={report} highlightIssue={this.highlightIssue} />
       </div>
     );
   }
