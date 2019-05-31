@@ -62,7 +62,7 @@ jobs:
               git rm -rf .
               cd ..
 
-              npm build
+              npm run build
 
               cp -a build/. out/.
 
