@@ -53,7 +53,7 @@ class App extends React.Component {
             </div>
         }
         <div className={`fixed-bottom text-center pb-1${plugin ? null : ' text-white'}`} style={{ fontSize: 12 }}>
-          © Sergii Bomko, 2019 | <a href="https://github.com/aquiladev/remix-mythx-plugin">GitHub</a>
+          © Sergii Bomko, 2019 | <a href="https://github.com/aquiladev/remix-mythx-plugin" target="_blank" rel="noopener noreferrer">GitHub</a> | <a href="https://discord.gg/VhdtjCh"  target="_blank" rel="noopener noreferrer">Get support</a>
         </div>
       </>
     );
