@@ -76,8 +76,11 @@ class Plugin extends React.Component {
     mythXClient.analyzeWithStatus(
       {
         "data": this.getRequestData(),
-        "clientToolName": "remythx"
-      })
+        "clientToolName": "remythx",    
+      },
+      240 * 1000, // Timeout
+      90 * 1000, // Initial delay
+      )
       .then(result => {
         this.setState({
           analysis: result,
