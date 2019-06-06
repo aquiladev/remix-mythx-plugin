@@ -1,8 +1,8 @@
 # Remix MythX plugin
 
-[![CircleCI](https://circleci.com/gh/aquiladev/remix-mythx-plugin.svg?style=svg)](https://circleci.com/gh/aquiladev/remix-mythx-plugin)
+[![CircleCI](https://circleci.com/gh/aquiladev/remix-mythx-plugin/tree/master.svg?style=svg)](https://circleci.com/gh/aquiladev/remix-mythx-plugin/tree/master)
 
-Security analysis of smart contracts by using MythX
+Performs Static and Dynamic Security Analysis using the MythX Cloud Service.
 
 ## Install plugin
 In order to start using the plugin you need to activate it in plugin manager.
