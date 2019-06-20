@@ -147,7 +147,12 @@ const convertMythXReport2EsIssue = (report, data) => {
       };
     }
 
-    results[filePath].messages.push(issue2EsLint(issue, data.sources[filePath].content));
+    let message = { error: "Error: File not found" };
+    if (data.sources[filePath]) {
+      message = issue2EsLint(issue, data.sources[filePath].content);
+    }
+
+    results[filePath].messages.push(message);
   });
 
   for (let k in results) {

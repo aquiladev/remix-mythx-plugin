@@ -26,21 +26,27 @@ function Report({ report, highlightIssue }) {
                   };
                   return (
                     <div key={i} className="border-bottom pt-2 pb-2">
-                      <div>{x.filePath}</div>
+                      <div className="text-truncate">{x.filePath}</div>
                       {
                         x.messages.map((m, j) => {
                           return (
                             <div key={j} className="pl-3">
-                              <button type="button"
-                                className="btn btn-link p-0 pr-1"
-                                onClick={() => { highlightIssue(x, m); }}>
-                                {`[${m.line + 1}:${m.column}]`}
-                              </button>
-                              <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
                               {
-                                m.ruleId ?
-                                  <a href={m.ruleLink} className="pl-1">[{m.ruleId}]</a> :
-                                  null
+                                m.error ?
+                                  <>{m.error}</> :
+                                  <>
+                                    <button type="button"
+                                      className="btn btn-link p-0 pr-1"
+                                      onClick={() => { highlightIssue(x, m); }}>
+                                      {`[${m.line + 1}:${m.column}]`}
+                                    </button>
+                                    <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
+                                    {
+                                      m.ruleId ?
+                                        <a href={m.ruleLink} className="pl-1">[{m.ruleId}]</a> :
+                                        null
+                                    }
+                                  </>
                               }
                             </div>
                           );
