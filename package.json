@@ -13,11 +13,15 @@
     "remix-lib": "0.4.6",
     "remix-plugin": "0.0.2-alpha.7"
   },
+  "devDependencies": {
+    "release-it": "12.3.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "release": "release-it --no-npm.publish"
   },
   "eslintConfig": {
     "extends": "react-app"
