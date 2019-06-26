@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import armlet from 'armlet';
+import { Client } from 'mythxjs';
 import { Tooltip } from 'reactstrap';
 
 import { formatIssues } from './lib/report';
@@ -61,11 +61,8 @@ class Plugin extends React.Component {
   analyze = async () => {
     const { address, pwd, compilation } = this.state;
 
-    const mythXClient = new armlet.Client(
-      {
-        ethAddress: address,
-        password: pwd,
-      });
+    const mythx = new Client(address, pwd, "remythx");
+    await mythx.login();
 
     this.setState({
       analysis: {},
@@ -73,32 +70,26 @@ class Plugin extends React.Component {
       isAnalyzig: true
     });
     await this.props.client.editor.discardHighlight();
-    mythXClient.analyzeWithStatus(
-      {
-        "data": this.getRequestData(),
-        "clientToolName": "remythx",    
-      },
-      240 * 1000, // Timeout
-      90 * 1000, // Initial delay
-      )
-      .then(result => {
-        this.setState({
-          analysis: result,
-          error: '',
-          isAnalyzig: false
-        });
 
-        const { issues } = result;
-        this.handleResult(compilation.source, issues);
-      }).catch(err => {
-        this.setState({
-          error: err.message || err,
-          analysis: {},
-          isAnalyzig: false
-        });
+    try {
+      const options = this.getRequestData();
+      const analysis = await mythx.analyze(options);
+      const issues = await mythx.getDetectedIssues(analysis.uuid);
+
+      this.setState({
+        analysis: issues,
+        error: '',
+        isAnalyzig: false
       });
-    // const result = require('./examples/reportWithIssues.json');
-    // this.handleResult(compilation.source, result);
+
+      this.handleResult(compilation.source, issues);
+    } catch (err) {
+      this.setState({
+        error: err.message || err,
+        analysis: {},
+        isAnalyzig: false
+      });
+    }
   }
 
   getRequestData() {
