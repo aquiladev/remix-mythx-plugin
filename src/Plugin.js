@@ -32,6 +32,7 @@ class Plugin extends React.Component {
       infoTooltipOpen: false
     };
 
+    this.init = this.init.bind(this);
     this.saveCredentials = this.saveCredentials.bind(this);
     this.analyze = this.analyze.bind(this);
     this.getRequestData = this.getRequestData.bind(this);
@@ -39,13 +40,33 @@ class Plugin extends React.Component {
     this.getContractList = this.getContractList.bind(this);
     this.highlightIssue = this.highlightIssue.bind(this);
 
-    this.props.client.on('solidity', 'compilationFinished', (target, source, version, data) => {
+    this.init();
+  }
+
+  init() {
+    const { client } = this.props;
+
+    client.solidity.getCompilationResult()
+      .then(({ data, source }) => {
+        if (!source) {
+          return;
+        }
+
+        this.setState({
+          compilation: {
+            target: source.target,
+            source,
+            data
+          }
+        });
+      });
+
+    client.on('solidity', 'compilationFinished', (target, source, _, data) => {
       const list = Object.keys(data.contracts[target]);
       this.setState({
         compilation: {
           target,
           source,
-          version,
           data
         },
         selected: list[0]
