@@ -47,12 +47,11 @@ class Plugin extends React.Component {
     const { client } = this.props;
 
     client.solidity.getCompilationResult()
-      .then(result => {
-        if (!result) {
+      .then(({ data, source }) => {
+        if (!source) {
           return;
         }
 
-        const { source = {}, data = {} } = result;
         this.setState({
           compilation: {
             target: source.target,
