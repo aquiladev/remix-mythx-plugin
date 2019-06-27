@@ -95,10 +95,11 @@ class Plugin extends React.Component {
   getRequestData() {
     const { compilation, selected } = this.state;
     const { data = {}, source = {} } = compilation;
-    const { contracts = [] } = data;
+    const { contracts = [], sources = {} } = data;
 
-    var bytecode = contracts[compilation.target][selected].evm.bytecode;
-    var deployedBytecode = contracts[compilation.target][selected].evm.deployedBytecode;
+    const file = contracts[compilation.target];
+    const bytecode = file[selected].evm.bytecode;
+    const deployedBytecode = file[selected].evm.deployedBytecode;
     const request = {
       contractName: selected,
       bytecode: bytecode.object,
@@ -111,9 +112,22 @@ class Plugin extends React.Component {
       sources: {}
     };
 
-    for (let key in source.sources) {
-      if (source.sources.hasOwnProperty(key)) {
-        request.sources[key] = { source: source.sources[key].content };
+    var useAST = Object.keys(sources).reduce(function (flag, s) {
+      return flag && !!sources[s].ast;
+    }, true);
+
+    if (useAST) {
+      for (let key in source.sources) {
+        if (source.sources.hasOwnProperty(key)) {
+          request.sources[key] = { ast: sources[key].ast };
+        }
+      }
+    }
+    else {
+      for (let key in source.sources) {
+        if (source.sources.hasOwnProperty(key)) {
+          request.sources[key] = { source: source.sources[key].content };
+        }
       }
     }
 
