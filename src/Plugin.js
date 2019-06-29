@@ -27,8 +27,7 @@ class Plugin extends React.Component {
       selected: '',
       isAnalyzig: false,
       analysis: {},
-      report: {},
-      error: '',
+      reports: {},
       infoTooltipOpen: false
     };
 
@@ -57,7 +56,8 @@ class Plugin extends React.Component {
             target: source.target,
             source,
             data
-          }
+          },
+          selected: Object.keys(data.contracts[source.target])[0]
         });
       });
 
@@ -80,14 +80,13 @@ class Plugin extends React.Component {
   }
 
   analyze = async () => {
-    const { address, pwd, compilation } = this.state;
+    const { address, pwd, compilation, reports, selected } = this.state;
 
     const mythx = new Client(address, pwd, "remythx");
     await mythx.login();
 
     this.setState({
       analysis: {},
-      error: '',
       isAnalyzig: true
     });
     await this.props.client.editor.discardHighlight();
@@ -99,15 +98,23 @@ class Plugin extends React.Component {
 
       this.setState({
         analysis: issues,
-        error: '',
         isAnalyzig: false
       });
 
       this.handleResult(compilation.source, issues);
     } catch (err) {
       this.setState({
-        error: err.message || err,
         analysis: {},
+        reports: {
+          ...reports,
+          [selected]: {
+            list: [{
+              messages: [{
+                error: err.message || err
+              }]
+            }]
+          }
+        },
         isAnalyzig: false
       });
     }
@@ -156,19 +163,25 @@ class Plugin extends React.Component {
   }
 
   handleResult(data, result) {
-    const { compilation } = this.state;
+    const { compilation, selected, reports } = this.state;
     const uniqueIssues = formatIssues(data, result);
 
     if (uniqueIssues.length === 0) {
       this.setState({
-        report: {
-          message: `✔ No errors/warnings found in ${compilation.target}`
+        reports: {
+          ...reports,
+          [selected]: {
+            message: `✔ No errors/warnings found in ${compilation.target}::${selected}`
+          }
         }
       });
     } else {
       this.setState({
-        report: {
-          list: uniqueIssues
+        reports: {
+          ...reports,
+          [selected]: {
+            list: uniqueIssues
+          }
         }
       });
     }
@@ -197,7 +210,7 @@ class Plugin extends React.Component {
   }
 
   render() {
-    const { compilation, selected, isAnalyzig, error, report } = this.state;
+    const { compilation, selected, isAnalyzig, reports } = this.state;
 
     return (
       <div className="container">
@@ -292,17 +305,7 @@ class Plugin extends React.Component {
             }
           </div>
         </div>
-        {
-          error ?
-            <div className="row mt-3">
-              <div className="col-md-6 offset-md-3">
-                <div className="alert alert-danger w-100" role="alert">
-                  {error}
-                </div>
-              </div>
-            </div> : null
-        }
-        <Report report={report} highlightIssue={this.highlightIssue} />
+        <Report report={reports[selected] || {}} highlightIssue={this.highlightIssue} />
       </div>
     );
   }

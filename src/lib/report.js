@@ -147,7 +147,7 @@ const convertMythXReport2EsIssue = (report, data) => {
       };
     }
 
-    let message = { error: "Error: File not found" };
+    let message = { error: "File not found" };
     if (data.sources[filePath]) {
       message = issue2EsLint(issue, data.sources[filePath].content);
     }
