@@ -57,7 +57,8 @@ class Plugin extends React.Component {
             target: source.target,
             source,
             data
-          }
+          },
+          selected: Object.keys(data.contracts[source.target])[0]
         });
       });
 
