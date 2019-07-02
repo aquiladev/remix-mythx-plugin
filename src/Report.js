@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { isFatal } from './lib/eslint';
+
 function Report({ report, highlightIssue }) {
   return (
     <>
@@ -33,12 +35,12 @@ function Report({ report, highlightIssue }) {
                           <div key={j} className="pl-3">
                             {
                               m.error ?
-                                <div className="alert alert-danger">
+                                <div className="alert alert-danger p-1">
                                   {m.error}
                                 </div> :
                                 <>
                                   <button type="button"
-                                    className="btn btn-warning text-left p-1 mb-1"
+                                    className={`btn ${isFatal(m.fatal, m.severity) ? "btn-danger" : "btn-warning"} text-left p-1 mb-1 w-100`}
                                     onClick={() => { highlightIssue(x, m); }}>
                                     <span className="pr-2">{`[${m.line + 1}:${m.column}]`}</span>
                                     <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
@@ -51,7 +53,7 @@ function Report({ report, highlightIssue }) {
                       })
                     }
                     {
-                      issueCount &&
+                      !!issueCount &&
                       <div>
                         {`✖ ${summary(issueCount, 'issue')} (${summary(x.errorCount, 'error')}, ${summary(x.warningCount, 'warning')})`}
                       </div>
