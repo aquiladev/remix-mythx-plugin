@@ -6,12 +6,15 @@ import { Tooltip } from 'reactstrap';
 import { formatIssues } from './lib/report';
 import Report from './Report';
 import info from './images/info.svg';
+import rightArrow from './images/right-arrow.svg';
+import downArrow from './images/down-arrow.svg';
 
 const storageKey = 'remix-mythx-plugin';
 const TRIAL_CREDS = {
   address: '0x0000000000000000000000000000000000000000',
   pwd: 'trial'
 };
+const token_invalid_msg = 'Access token has expired or is invalid! Please login again.';
 
 class Plugin extends React.Component {
   constructor(props) {
@@ -20,19 +23,22 @@ class Plugin extends React.Component {
     const raw = localStorage.getItem(storageKey) || '{}';
     const settings = JSON.parse(raw);
 
+    const address = settings.address || TRIAL_CREDS.address;
     this.state = {
-      address: settings.address || TRIAL_CREDS.address,
+      address,
       pwd: settings.pwd || TRIAL_CREDS.pwd,
+      jwt: null,
       compilation: {},
       selected: '',
       isAnalyzig: false,
       analysis: {},
-      report: {},
-      error: '',
+      reports: {},
+      creadOpen: address === TRIAL_CREDS.address,
       infoTooltipOpen: false
     };
 
     this.init = this.init.bind(this);
+    this.login = this.login.bind(this);
     this.saveCredentials = this.saveCredentials.bind(this);
     this.analyze = this.analyze.bind(this);
     this.getRequestData = this.getRequestData.bind(this);
@@ -47,7 +53,13 @@ class Plugin extends React.Component {
     const { client } = this.props;
 
     client.solidity.getCompilationResult()
-      .then(({ data, source }) => {
+      .then((result) => {
+        if (!result) {
+          return;
+        }
+
+        const { data, source } = result;
+
         if (!source) {
           return;
         }
@@ -81,15 +93,15 @@ class Plugin extends React.Component {
   }
 
   analyze = async () => {
-    const { address, pwd, compilation } = this.state;
+    const { address, pwd, compilation, reports, selected } = this.state;
 
     const mythx = new Client(address, pwd, "remythx");
-    await mythx.login();
+    const jwt = await this.login(mythx);
 
     this.setState({
       analysis: {},
-      error: '',
-      isAnalyzig: true
+      isAnalyzig: true,
+      jwt
     });
     await this.props.client.editor.discardHighlight();
 
@@ -100,18 +112,43 @@ class Plugin extends React.Component {
 
       this.setState({
         analysis: issues,
-        error: '',
         isAnalyzig: false
       });
 
       this.handleResult(compilation.source, issues);
     } catch (err) {
       this.setState({
-        error: err.message || err,
         analysis: {},
+        reports: {
+          ...reports,
+          [selected]: {
+            list: [{
+              messages: [{
+                error: err.message || err
+              }]
+            }]
+          }
+        },
         isAnalyzig: false
       });
     }
+  }
+
+  login = (client) => {
+    let jwt = this.state.jwt;
+
+    if (jwt) {
+      try {
+        client.loginWithToken(jwt);
+        return jwt;
+      } catch (err) {
+        if (err.message !== token_invalid_msg) {
+          throw err;
+        }
+      }
+    }
+
+    return client.login();
   }
 
   getRequestData() {
@@ -157,19 +194,25 @@ class Plugin extends React.Component {
   }
 
   handleResult(data, result) {
-    const { compilation } = this.state;
+    const { compilation, selected, reports } = this.state;
     const uniqueIssues = formatIssues(data, result);
 
     if (uniqueIssues.length === 0) {
       this.setState({
-        report: {
-          message: `✔ No errors/warnings found in ${compilation.target}`
+        reports: {
+          ...reports,
+          [selected]: {
+            message: `✔ No errors/warnings found in ${compilation.target}::${selected}`
+          }
         }
       });
     } else {
       this.setState({
-        report: {
-          list: uniqueIssues
+        reports: {
+          ...reports,
+          [selected]: {
+            list: uniqueIssues
+          }
         }
       });
     }
@@ -198,15 +241,20 @@ class Plugin extends React.Component {
   }
 
   render() {
-    const { compilation, selected, isAnalyzig, error, report } = this.state;
+    const { compilation, selected, isAnalyzig, reports, creadOpen } = this.state;
 
     return (
       <div className="container">
         <div className="row border-bottom pb-3">
           <div className="col-md-6 offset-md-3">
-            <div>
+            <div className="btn btn-light btn-block text-left rounded-0 border-0" style={{ cursor: "pointer" }} onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
               Credentials
-              <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26 }} id="cred_info" />
+              <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26, verticalAlign: 'top', marginTop: 4 }} id="cred_info" />
+              {
+                creadOpen ?
+                  <img src={downArrow} alt="collapse" style={{ height: 20, width: 20, position: 'absolute', right: 24, top: 10 }} /> :
+                  <img src={rightArrow} alt="expand" style={{ height: 20, width: 20, position: 'absolute', right: 20 }} />
+              }
               <Tooltip placement="right"
                 isOpen={this.state.infoTooltipOpen}
                 autohide={false}
@@ -217,35 +265,37 @@ class Plugin extends React.Component {
                 In order to get credential you need to <a href="https://mythx.io/" target="_blank" rel="noopener noreferrer" className="text-nowrap">sign up</a>
               </Tooltip>
             </div>
-            <form>
-              <div className="form-group">
-                <label htmlFor="address">Address</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="address"
-                  aria-describedby="emailHelp"
-                  placeholder="Address"
-                  onChange={(e) => this.setState({ address: e.target.value })}
-                  defaultValue={this.state.address} />
-              </div>
-              <div className="form-group">
-                <label htmlFor="pwd">Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="pwd"
-                  placeholder="Password"
-                  onChange={(e) => this.setState({ pwd: e.target.value })}
-                  defaultValue={this.state.pwd} />
-              </div>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={this.saveCredentials}>
-                Save
-              </button>
-            </form>
+            <div className={creadOpen ? null : "collapse"}>
+              <form>
+                <div className="form-group">
+                  <label htmlFor="address">Address</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="address"
+                    aria-describedby="emailHelp"
+                    placeholder="Address"
+                    onChange={(e) => this.setState({ address: e.target.value })}
+                    defaultValue={this.state.address} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="pwd">Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="pwd"
+                    placeholder="Password"
+                    onChange={(e) => this.setState({ pwd: e.target.value })}
+                    defaultValue={this.state.pwd} />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={this.saveCredentials}>
+                  Save
+                  </button>
+              </form>
+            </div>
           </div>
         </div>
         <div className="row mt-3">
@@ -293,17 +343,7 @@ class Plugin extends React.Component {
             }
           </div>
         </div>
-        {
-          error ?
-            <div className="row mt-3">
-              <div className="col-md-6 offset-md-3">
-                <div className="alert alert-danger w-100" role="alert">
-                  {error}
-                </div>
-              </div>
-            </div> : null
-        }
-        <Report report={report} highlightIssue={this.highlightIssue} />
+        <Report report={reports[selected] || {}} highlightIssue={this.highlightIssue} />
       </div>
     );
   }
