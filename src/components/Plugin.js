@@ -2,12 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Client } from 'mythxjs';
 import { Tooltip } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle, faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
-import { formatIssues } from './lib/report';
+import { formatIssues } from './../lib/report';
 import Report from './Report';
-import info from './images/info.svg';
-import rightArrow from './images/right-arrow.svg';
-import downArrow from './images/down-arrow.svg';
 
 const storageKey = 'remix-mythx-plugin';
 const TRIAL_CREDS = {
@@ -249,12 +248,8 @@ class Plugin extends React.Component {
           <div className="col-md-6 offset-md-3">
             <div className="btn btn-light btn-block text-left rounded-0 border-0" style={{ cursor: "pointer" }} onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
               Credentials
-              <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26, verticalAlign: 'top', marginTop: 4 }} id="cred_info" />
-              {
-                creadOpen ?
-                  <img src={downArrow} alt="collapse" style={{ height: 20, width: 20, position: 'absolute', right: 24, top: 10 }} /> :
-                  <img src={rightArrow} alt="expand" style={{ height: 20, width: 20, position: 'absolute', right: 20 }} />
-              }
+              <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="cred_info" />
+              <FontAwesomeIcon icon={creadOpen ? faAngleDown : faAngleRight} style={{ position: 'absolute', right: 24, top: 10 }} />
               <Tooltip placement="right"
                 isOpen={this.state.infoTooltipOpen}
                 autohide={false}
@@ -328,7 +323,7 @@ class Plugin extends React.Component {
                         <span>Analyze</span>
                     }
                   </button>
-                  <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26 }} id="analysis_info" />
+                  <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="analysis_info" />
                   <Tooltip placement="right"
                     isOpen={this.state.analysisTooltipOpen}
                     autohide={true}

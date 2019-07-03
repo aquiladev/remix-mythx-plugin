@@ -3,9 +3,9 @@ import { createIframeClient, remixApi } from 'remix-plugin';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
-import Plugin from './Plugin';
-import Footer from './Footer';
-import Home from './Home';
+import Plugin from './components/Plugin';
+import Footer from './components/Footer';
+import Home from './components/Home';
 
 let client = {};
 

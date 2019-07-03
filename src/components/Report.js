@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { isFatal } from './lib/eslint';
+import { isFatal } from './../lib/eslint';
 
 function Report({ report, highlightIssue }) {
   return (
