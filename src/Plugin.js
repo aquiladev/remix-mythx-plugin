@@ -249,7 +249,7 @@ class Plugin extends React.Component {
           <div className="col-md-6 offset-md-3">
             <div className="btn btn-light btn-block text-left rounded-0 border-0" style={{ cursor: "pointer" }} onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
               Credentials
-              <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26 }} id="cred_info" />
+              <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26, verticalAlign: 'top', marginTop: 4 }} id="cred_info" />
               {
                 creadOpen ?
                   <img src={downArrow} alt="collapse" style={{ height: 20, width: 20, position: 'absolute', right: 24, top: 10 }} /> :
