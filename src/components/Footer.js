@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import packageJson from './../package.json';
+import packageJson from './../../package.json';
 
 function Footer({ isPlugin }) {
   return (

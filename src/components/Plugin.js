@@ -2,12 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Client } from 'mythxjs';
 import { Tooltip } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faInfoCircle,
+  faAngleRight,
+  faAngleDown,
+  faClipboard
+} from '@fortawesome/free-solid-svg-icons';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { formatIssues } from './lib/report';
+import { formatIssues } from './../lib/report';
 import Report from './Report';
-import info from './images/info.svg';
-import rightArrow from './images/right-arrow.svg';
-import downArrow from './images/down-arrow.svg';
 
 const storageKey = 'remix-mythx-plugin';
 const TRIAL_CREDS = {
@@ -31,7 +36,7 @@ class Plugin extends React.Component {
       compilation: {},
       selected: '',
       isAnalyzig: false,
-      analysis: {},
+      analyses: {},
       reports: {},
       creadOpen: address === TRIAL_CREDS.address,
       infoTooltipOpen: false
@@ -93,13 +98,13 @@ class Plugin extends React.Component {
   }
 
   analyze = async () => {
-    const { address, pwd, compilation, reports, selected } = this.state;
+    const { address, pwd, compilation, analyses, reports, selected } = this.state;
 
     const mythx = new Client(address, pwd, "remythx");
     const jwt = await this.login(mythx);
 
     this.setState({
-      analysis: {},
+      analyses: { ...analyses, [selected]: null },
       isAnalyzig: true,
       jwt
     });
@@ -111,14 +116,14 @@ class Plugin extends React.Component {
       const issues = await mythx.getDetectedIssues(analysis.uuid);
 
       this.setState({
-        analysis: issues,
+        analyses: { ...analyses, [selected]: issues },
         isAnalyzig: false
       });
 
       this.handleResult(compilation.source, issues);
     } catch (err) {
       this.setState({
-        analysis: {},
+        analyses: { ...analyses, [selected]: null },
         reports: {
           ...reports,
           [selected]: {
@@ -241,7 +246,7 @@ class Plugin extends React.Component {
   }
 
   render() {
-    const { compilation, selected, isAnalyzig, reports, creadOpen } = this.state;
+    const { compilation, selected, isAnalyzig, analyses, reports, creadOpen } = this.state;
 
     return (
       <div className="container">
@@ -249,12 +254,8 @@ class Plugin extends React.Component {
           <div className="col-md-6 offset-md-3">
             <div className="btn btn-light btn-block text-left rounded-0 border-0" style={{ cursor: "pointer" }} onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
               Credentials
-              <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26, verticalAlign: 'top', marginTop: 4 }} id="cred_info" />
-              {
-                creadOpen ?
-                  <img src={downArrow} alt="collapse" style={{ height: 20, width: 20, position: 'absolute', right: 24, top: 10 }} /> :
-                  <img src={rightArrow} alt="expand" style={{ height: 20, width: 20, position: 'absolute', right: 20 }} />
-              }
+              <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="cred_info" />
+              <FontAwesomeIcon icon={creadOpen ? faAngleDown : faAngleRight} style={{ position: 'absolute', right: 24, top: 10 }} />
               <Tooltip placement="right"
                 isOpen={this.state.infoTooltipOpen}
                 autohide={false}
@@ -317,25 +318,34 @@ class Plugin extends React.Component {
                       )}
                     </select>
                   </div>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={this.analyze}
-                    disabled={isAnalyzig}>
+                  <div>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={this.analyze}
+                      disabled={isAnalyzig}>
+                      {
+                        isAnalyzig ?
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> :
+                          <span>Analyze</span>
+                      }
+                    </button>
+                    <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="analysis_info" />
+                    <Tooltip placement="right"
+                      isOpen={this.state.analysisTooltipOpen}
+                      autohide={true}
+                      target="analysis_info"
+                      toggle={() => { this.setState({ analysisTooltipOpen: !this.state.analysisTooltipOpen }); }}>
+                      Analysis can take couple of minutes
+                    </Tooltip>
                     {
-                      isAnalyzig ?
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> :
-                        <span>Analyze</span>
+                      analyses[selected] && <CopyToClipboard text={JSON.stringify(analyses[selected])}>
+                        <button type="button" className="btn float-right" title="Copy raw report to clipboard">
+                          <FontAwesomeIcon className="ml-2" icon={faClipboard} /><span className="pl-1">Raw report</span>
+                        </button>
+                      </CopyToClipboard>
                     }
-                  </button>
-                  <img src={info} alt="info" className="pl-2" style={{ height: 18, width: 26 }} id="analysis_info" />
-                  <Tooltip placement="right"
-                    isOpen={this.state.analysisTooltipOpen}
-                    autohide={true}
-                    target="analysis_info"
-                    toggle={() => { this.setState({ analysisTooltipOpen: !this.state.analysisTooltipOpen }); }}>
-                    Analysis can take couple of minutes
-                  </Tooltip>
+                  </div>
                 </form> :
                 <div className="alert alert-warning w-100" role="alert">
                   You need to compile your contract first!
