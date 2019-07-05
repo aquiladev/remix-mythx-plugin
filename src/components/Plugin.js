@@ -308,6 +308,7 @@ class Plugin extends React.Component {
                       className="form-control"
                       value={selected}
                       onChange={(e) => this.setState({ selected: e.target.value })}
+                      disabled={isAnalyzig}
                     >
                       {contractList.map((x, i) =>
                         <option key={i} value={x}>{x}</option>
