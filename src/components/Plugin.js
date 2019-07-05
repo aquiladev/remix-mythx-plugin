@@ -14,6 +14,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { formatIssues } from './../lib/report';
 import Report from './Report';
 
+const separator = '::';
 const storageKey = 'remix-mythx-plugin';
 const TRIAL_CREDS = {
   address: '0x0000000000000000000000000000000000000000',
@@ -33,8 +34,9 @@ class Plugin extends React.Component {
       address,
       pwd: settings.pwd || TRIAL_CREDS.pwd,
       jwt: null,
-      compilation: {},
+      compilations: {},
       selected: '',
+      contractList: [],
       isAnalyzig: false,
       analyses: {},
       reports: {},
@@ -48,7 +50,6 @@ class Plugin extends React.Component {
     this.analyze = this.analyze.bind(this);
     this.getRequestData = this.getRequestData.bind(this);
     this.handleResult = this.handleResult.bind(this);
-    this.getContractList = this.getContractList.bind(this);
     this.highlightIssue = this.highlightIssue.bind(this);
 
     this.init();
@@ -69,27 +70,35 @@ class Plugin extends React.Component {
           return;
         }
 
+        const list = Object.keys(data.contracts[source.target]);
         this.setState({
-          compilation: {
-            target: source.target,
-            source,
-            data
+          compilations: {
+            ...this.state.compilations,
+            [source.target]: { source, data }
           },
-          selected: Object.keys(data.contracts[source.target])[0]
+          selected: `${source.target}${separator}${list[0]}`,
+          contractList: [...this.state.contractList, ...this.getContracts(data, source.target)],
         });
       });
 
     client.on('solidity', 'compilationFinished', (target, source, _, data) => {
       const list = Object.keys(data.contracts[target]);
+      const contractSet = new Set([...this.state.contractList, ...this.getContracts(data, target)]);
       this.setState({
-        compilation: {
-          target,
-          source,
-          data
+        compilations: {
+          ...this.state.compilations,
+          [target]: { source, data }
         },
-        selected: list[0]
+        selected: `${target}${separator}${list[0]}`,
+        contractList: Array.from(contractSet)
       });
     });
+  }
+
+  getContracts(data, target) {
+    const { contracts = [] } = data;
+    var file = contracts[target] || {};
+    return Object.keys(file).map(x => `${target}${separator}${x}`);
   }
 
   saveCredentials() {
@@ -98,7 +107,8 @@ class Plugin extends React.Component {
   }
 
   analyze = async () => {
-    const { address, pwd, compilation, analyses, reports, selected } = this.state;
+    const { address, pwd, compilations, selected, analyses, reports } = this.state;
+    const [target] = selected.split(separator);
 
     const mythx = new Client(address, pwd, "remythx");
     const jwt = await this.login(mythx);
@@ -120,7 +130,7 @@ class Plugin extends React.Component {
         isAnalyzig: false
       });
 
-      this.handleResult(compilation.source, issues);
+      this.handleResult(compilations[target].source, issues);
     } catch (err) {
       this.setState({
         analyses: { ...analyses, [selected]: null },
@@ -157,21 +167,22 @@ class Plugin extends React.Component {
   }
 
   getRequestData() {
-    const { compilation, selected } = this.state;
-    const { data = {}, source = {} } = compilation;
+    const { compilations, selected } = this.state;
+    const [target, contract] = selected.split(separator);
+    const { data = {}, source = {} } = compilations[target];
     const { contracts = [], sources = {} } = data;
 
-    const file = contracts[compilation.target];
-    const bytecode = file[selected].evm.bytecode;
-    const deployedBytecode = file[selected].evm.deployedBytecode;
+    const file = contracts[target];
+    const bytecode = file[contract].evm.bytecode;
+    const deployedBytecode = file[contract].evm.deployedBytecode;
     const request = {
-      contractName: selected,
+      contractName: contract,
       bytecode: bytecode.object,
       sourceMap: bytecode.sourceMap,
       deployedBytecode: deployedBytecode.object,
       deployedSourceMap: deployedBytecode.sourceMap,
       analysisMode: "quick",
-      mainSource: compilation.target,
+      mainSource: target,
       sourceList: Object.keys(source.sources),
       sources: {}
     };
@@ -199,7 +210,7 @@ class Plugin extends React.Component {
   }
 
   handleResult(data, result) {
-    const { compilation, selected, reports } = this.state;
+    const { selected, reports } = this.state;
     const uniqueIssues = formatIssues(data, result);
 
     if (uniqueIssues.length === 0) {
@@ -207,7 +218,7 @@ class Plugin extends React.Component {
         reports: {
           ...reports,
           [selected]: {
-            message: `✔ No errors/warnings found in ${compilation.target}::${selected}`
+            message: `✔ No errors/warnings found in ${selected}`
           }
         }
       });
@@ -223,19 +234,6 @@ class Plugin extends React.Component {
     }
   }
 
-  getContractList() {
-    const { compilation } = this.state;
-    const { data = {} } = compilation;
-    const { contracts = [] } = data;
-    var file = contracts[compilation.target] || {};
-    return Object.keys(file).map(x => {
-      return {
-        name: x,
-        path: `${compilation.target}::${x}`
-      }
-    });
-  }
-
   async highlightIssue(issue, message) {
     const position = {
       start: { line: message.line, column: message.column },
@@ -246,7 +244,8 @@ class Plugin extends React.Component {
   }
 
   render() {
-    const { compilation, selected, isAnalyzig, analyses, reports, creadOpen } = this.state;
+    const { contractList, selected, isAnalyzig, analyses, reports, creadOpen } = this.state;
+    const [target] = selected.split(separator);
 
     return (
       <div className="container">
@@ -302,19 +301,17 @@ class Plugin extends React.Component {
         <div className="row mt-3">
           <div className="col-md-6 offset-md-3">
             {
-              compilation.target ?
-                <form>
+              target ?
+                <>
                   <div className="form-group">
                     <select
                       className="form-control"
-                      defaultValue={selected}
-                      onChange={(e) => this.setState({ selected: e.target.value })}>
-                      {this.getContractList().map((x, i) =>
-                        <option
-                          key={i}
-                          value={x.name}>
-                          {x.path}
-                        </option>
+                      value={selected}
+                      onChange={(e) => this.setState({ selected: e.target.value })}
+                      disabled={isAnalyzig}
+                    >
+                      {contractList.map((x, i) =>
+                        <option key={i} value={x}>{x}</option>
                       )}
                     </select>
                   </div>
@@ -346,7 +343,7 @@ class Plugin extends React.Component {
                       </CopyToClipboard>
                     }
                   </div>
-                </form> :
+                </> :
                 <div className="alert alert-warning w-100" role="alert">
                   You need to compile your contract first!
                 </div>
