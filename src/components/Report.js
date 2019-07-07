@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
 
 import { isFatal } from './../lib/eslint';
 
@@ -42,6 +44,11 @@ function Report({ report, highlightIssue }) {
                                   <button type="button"
                                     className={`btn ${isFatal(m.fatal, m.severity) ? "btn-danger" : "btn-warning"} text-left p-1 mb-1 w-100`}
                                     onClick={() => { highlightIssue(x, m); }}>
+                                    {m.sourceType === "raw-bytecode" &&
+                                      <span title="raw-bytecode">
+                                        <FontAwesomeIcon className="float-right" style={{ fontSize: 10 }} icon={faCode} />
+                                      </span>
+                                    }
                                     <span className="pr-2">{`[${m.line + 1}:${m.column}]`}</span>
                                     <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
                                     {m.ruleId && <a href={m.ruleLink} className="pl-1">[{m.ruleId}]</a>}
