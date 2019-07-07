@@ -1,5 +1,5 @@
 import React from 'react';
-import { createIframeClient, remixApi } from 'remix-plugin';
+import { createIframeClient, remixApi } from '@remixproject/plugin';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
