@@ -10,6 +10,7 @@ import {
   faClipboard
 } from '@fortawesome/free-solid-svg-icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import keccak from 'keccakjs';
 
 import { formatIssues } from './../lib/report';
 import Report from './Report';
@@ -37,6 +38,7 @@ class Plugin extends React.Component {
       compilations: {},
       selected: '',
       contractList: [],
+      mapping: {},
       isAnalyzig: false,
       analyses: {},
       reports: {},
@@ -45,6 +47,7 @@ class Plugin extends React.Component {
     };
 
     this.init = this.init.bind(this);
+    this.processCompilation = this.processCompilation.bind(this);
     this.login = this.login.bind(this);
     this.saveCredentials = this.saveCredentials.bind(this);
     this.analyze = this.analyze.bind(this);
@@ -70,28 +73,37 @@ class Plugin extends React.Component {
           return;
         }
 
-        const list = Object.keys(data.contracts[source.target]);
-        this.setState({
-          compilations: {
-            ...this.state.compilations,
-            [source.target]: { source, data }
-          },
-          selected: `${source.target}${separator}${list[0]}`,
-          contractList: [...this.state.contractList, ...this.getContracts(data, source.target)],
-        });
+        this.processCompilation(source.target, source, data);
       });
 
     client.on('solidity', 'compilationFinished', (target, source, _, data) => {
-      const list = Object.keys(data.contracts[target]);
-      const contractSet = new Set([...this.state.contractList, ...this.getContracts(data, target)]);
-      this.setState({
-        compilations: {
-          ...this.state.compilations,
-          [target]: { source, data }
-        },
-        selected: `${target}${separator}${list[0]}`,
-        contractList: Array.from(contractSet)
-      });
+      this.processCompilation(target, source, data);
+    });
+  }
+
+  processCompilation(target, source, data) {
+    const { compilations, contractList, mapping } = this.state;
+
+    const { contracts = [] } = data;
+    const file = contracts[target];
+    const fileMapping = {};
+
+    Object.keys(file).forEach(x => {
+      const bytecode = file[x].evm.deployedBytecode.object;
+      const hash = new keccak(256);
+      hash.update(Buffer.from(bytecode, 'hex'));
+
+      fileMapping[target] = target;
+      fileMapping[`0x${hash.digest('hex')}`] = target;
+    })
+
+    const list = Object.keys(data.contracts[target]);
+    const contractSet = new Set([...contractList, ...this.getContracts(data, target)]);
+    this.setState({
+      compilations: { ...compilations, [target]: { source, data } },
+      selected: `${target}${separator}${list[0]}`,
+      contractList: Array.from(contractSet),
+      mapping: { ...mapping, ...fileMapping }
     });
   }
 
@@ -210,8 +222,8 @@ class Plugin extends React.Component {
   }
 
   handleResult(data, result) {
-    const { selected, reports } = this.state;
-    const uniqueIssues = formatIssues(data, result);
+    const { selected, reports, mapping } = this.state;
+    const uniqueIssues = formatIssues(data, mapping, result);
 
     if (uniqueIssues.length === 0) {
       this.setState({

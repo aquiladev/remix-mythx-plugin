@@ -120,7 +120,7 @@ const getSourceIndex = issue => {
  * @param {object} data - Contains array of solidity contracts source code and the input filepath of contract
  * @returns {object}
  */
-const convertMythXReport2EsIssue = (report, data) => {
+const convertMythXReport2EsIssue = (report, mapping, data) => {
   const { issues, sourceList } = report;
   const results = {};
 
@@ -134,7 +134,8 @@ const convertMythXReport2EsIssue = (report, data) => {
      *
      * TODO: Remove the `replace` hack by fixing the `sourceList` response from MythX API
      */
-    const filePath = sourceList[sourceIndex].replace(/^\//, '');
+    const file = sourceList[sourceIndex].replace(/^\//, '');
+    const filePath = mapping[file] || file;
 
     if (!results[filePath]) {
       results[filePath] = {
@@ -152,7 +153,7 @@ const convertMythXReport2EsIssue = (report, data) => {
       message = issue2EsLint(issue, data.sources[filePath].content);
     }
 
-    results[filePath].messages.push(message);
+    results[filePath].messages.push({ ...message, sourceType: report.sourceType });
   });
 
   for (let k in results) {
@@ -168,10 +169,29 @@ const convertMythXReport2EsIssue = (report, data) => {
   return Object.values(results);
 };
 
-export const formatIssues = (data, issues) => {
-  const eslintIssues = issues
-    .map(report => convertMythXReport2EsIssue(report, data))
-    .reduce((acc, curr) => acc.concat(curr), []);
+export const formatIssues = (data, mapping, issues) => {
+  const results = {};
+  issues.forEach(report => {
+    convertMythXReport2EsIssue(report, mapping, data)
+      .forEach(issue => {
+        const result = results[issue.filePath];
+        if (!result) {
+          results[issue.filePath] = issue;
+          return;
+        }
 
+        results[issue.filePath] = {
+          errorCount: result.errorCount + issue.errorCount,
+          warningCount: result.warningCount + issue.warningCount,
+          fixableErrorCount: result.fixableErrorCount + issue.fixableErrorCount,
+          fixableWarningCount: result.fixableWarningCount + issue.fixableWarningCount,
+          filePath: result.filePath,
+          messages: [...result.messages, ...issue.messages],
+        };
+      });
+  });
+
+  const eslintIssues = Object.values(results)
+    .reduce((acc, curr) => acc.concat(curr), []);
   return getUniqueIssues(eslintIssues);
 };
