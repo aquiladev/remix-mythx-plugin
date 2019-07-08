@@ -346,7 +346,7 @@ class Plugin extends React.Component {
                       autohide={true}
                       target="analysis_info"
                       toggle={() => { this.setState({ analysisTooltipOpen: !this.state.analysisTooltipOpen }); }}>
-                      {isAnalyzig ? 'It will take approx. 2 minutes' : 'Analysis can take couple of minutes'}
+                      {isAnalyzig ? 'We are analyzing your contract. This should take up to 2 minutes' : 'Analysis can take couple of minutes'}
                     </Tooltip>
                     {
                       analyses[selected] && <CopyToClipboard text={JSON.stringify(analyses[selected])}>
