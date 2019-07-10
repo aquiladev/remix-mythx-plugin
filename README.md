@@ -32,3 +32,12 @@ You can create own account on [mythx.io](https://mythx.io/)
 
 ![Plugin report](assets/plugin_report.png?raw=true "Plugin report")
 When the report is received you will see a list of issues. You can click on an issue it will highlight the place of the issue in a code.
+
+# Troubleshooting
+1. If you run the plugin locally on Chrome, you may face with a white screen issue. The issue happens when a plugin uses more than 10% of the allocated resources for a page. In such a way browser detect and prevent malicious behavior of non-origin content, which is rendered in iframe on the page. The browser stops rendering of the content and waits until the sub-frame process stops using so many resources. 
+
+    Solutions:
+
+        1. Make sure that you build the plugin for the production environment
+    
+        2. Make sure that your React Chrome extension is disabled
