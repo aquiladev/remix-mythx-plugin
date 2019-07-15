@@ -117,6 +117,7 @@ class Plugin extends React.Component {
   saveCredentials() {
     const { address, pwd } = this.state;
     localStorage.setItem(storageKey, JSON.stringify({ address, pwd }));
+    this.props.addAlert('success', 'Saved');
   }
 
   analyze = async () => {
@@ -349,7 +350,9 @@ class Plugin extends React.Component {
                       {isAnalyzig ? 'We are analyzing your contract. This should take up to 2 minutes' : 'Analysis can take couple of minutes'}
                     </Tooltip>
                     {
-                      analyses[selected] && <CopyToClipboard text={JSON.stringify(analyses[selected])}>
+                      analyses[selected] && <CopyToClipboard
+                        text={JSON.stringify(analyses[selected])}
+                        onCopy={() => this.props.addAlert('success', 'Copied')}>
                         <button type="button" className="btn float-right" title="Copy raw report to clipboard">
                           <FontAwesomeIcon className="ml-2" icon={faClipboard} /><span className="pl-1">Raw report</span>
                         </button>
@@ -371,6 +374,7 @@ class Plugin extends React.Component {
 
 Plugin.propTypes = {
   client: PropTypes.object.isRequired,
+  addAlert: PropTypes.func.isRequired
 };
 
 export default Plugin;
