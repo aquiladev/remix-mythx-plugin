@@ -8,7 +8,6 @@ import {
   faAngleRight,
   faAngleDown,
   faClipboard,
-  faClock,
   faTrash
 } from '@fortawesome/free-solid-svg-icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -281,7 +280,10 @@ class Plugin extends React.Component {
             <div className="btn btn-light btn-block text-left rounded-0 border-0" style={{ cursor: "pointer" }} onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
               Credentials
               <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="cred_info" />
-              <FontAwesomeIcon icon={creadOpen ? faAngleDown : faAngleRight} style={{ position: 'absolute', right: 24, top: 10 }} />
+              <div style={{ position: 'absolute', right: 24, top: 4 }}>
+                {creadOpen ? <span style={{ fontSize: 14, lineHeight: '16px', paddingRight: 6 }}>hide</span> : null}
+                <FontAwesomeIcon icon={creadOpen ? faAngleDown : faAngleRight} className='pt-1' />
+              </div>
               <Tooltip placement="right"
                 isOpen={this.state.infoTooltipOpen}
                 autohide={false}
@@ -366,14 +368,22 @@ class Plugin extends React.Component {
                           <span>Analyze</span>
                       }
                     </button>
-                    <FontAwesomeIcon className="ml-2" icon={isAnalyzig ? faClock : faInfoCircle} id="analysis_info" />
-                    <Tooltip placement="right"
-                      isOpen={this.state.analysisTooltipOpen}
-                      autohide={true}
-                      target="analysis_info"
-                      toggle={() => { this.setState({ analysisTooltipOpen: !this.state.analysisTooltipOpen }); }}>
-                      {isAnalyzig ? 'We are analyzing your contract. This should take up to 2 minutes' : 'Analysis can take couple of minutes'}
-                    </Tooltip>
+                    {
+                      isAnalyzig ?
+                        <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                          We are analyzing your contract. This should take up to 2 minutes
+                        </div> :
+                        <>
+                          <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="analysis_info" />
+                          <Tooltip placement="right"
+                            isOpen={this.state.analysisTooltipOpen}
+                            autohide={true}
+                            target="analysis_info"
+                            toggle={() => { this.setState({ analysisTooltipOpen: !this.state.analysisTooltipOpen }); }}>
+                            Analysis can take couple of minutes
+                          </Tooltip>
+                        </>
+                    }
                     {
                       analyses[selected] && <CopyToClipboard
                         text={JSON.stringify(analyses[selected])}
