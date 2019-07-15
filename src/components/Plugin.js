@@ -62,7 +62,7 @@ class Plugin extends React.Component {
   init() {
     const { client } = this.props;
 
-    client.solidity.getCompilationResult()
+    client.call("solidity", "getCompilationResult")
       .then((result) => {
         if (!result) {
           return;
@@ -131,7 +131,7 @@ class Plugin extends React.Component {
       isAnalyzig: true,
       jwt
     });
-    await this.props.client.editor.discardHighlight();
+    await this.props.client.call("editor", "discardHighlight");
 
     try {
       const options = this.getRequestData();
@@ -162,7 +162,7 @@ class Plugin extends React.Component {
     }
   }
 
-  login = (client) => {
+  login(client) {
     let jwt = this.state.jwt;
 
     if (jwt) {
@@ -247,13 +247,13 @@ class Plugin extends React.Component {
     }
   }
 
-  async highlightIssue(issue, message) {
+  highlightIssue = async (issue, message) => {
     const position = {
       start: { line: message.line, column: message.column },
       end: { line: message.endLine, column: message.endCol }
     }
     const color = message.severity === 1 ? '#ffd300' : '#ff0000';
-    await this.props.client.editor.highlight(position, issue.filePath, color);
+    await this.props.client.call("editor", "highlight", position, issue.filePath, color);
   }
 
   render() {

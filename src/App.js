@@ -1,5 +1,5 @@
 import React from 'react';
-import { createIframeClient, remixApi } from 'remix-plugin';
+import { createIframeClient } from '@remixproject/plugin';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -17,8 +17,7 @@ class App extends React.Component {
       plugin: false
     };
 
-    const devMode = { port: 8080 }
-    client = createIframeClient({ customApi: remixApi, devMode });
+    client = createIframeClient();
     client.onload(() => {
       this.setState({ plugin: true });
     })
