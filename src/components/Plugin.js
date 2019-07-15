@@ -8,7 +8,8 @@ import {
   faAngleRight,
   faAngleDown,
   faClipboard,
-  faClock
+  faClock,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import keccak from 'keccakjs';
@@ -55,6 +56,7 @@ class Plugin extends React.Component {
     this.getRequestData = this.getRequestData.bind(this);
     this.handleResult = this.handleResult.bind(this);
     this.highlightIssue = this.highlightIssue.bind(this);
+    this.clear = this.clear.bind(this);
 
     this.init();
   }
@@ -257,6 +259,17 @@ class Plugin extends React.Component {
     await this.props.client.call("editor", "highlight", position, issue.filePath, color);
   }
 
+  clear() {
+    this.setState({
+      compilations: {},
+      selected: '',
+      contractList: [],
+      mapping: {},
+      analyses: {},
+      reports: {}
+    });
+  }
+
   render() {
     const { contractList, selected, isAnalyzig, analyses, reports, creadOpen } = this.state;
     const [target] = selected.split(separator);
@@ -307,7 +320,7 @@ class Plugin extends React.Component {
                   className="btn btn-primary"
                   onClick={this.saveCredentials}>
                   Save
-                  </button>
+                </button>
               </form>
             </div>
           </div>
@@ -317,17 +330,29 @@ class Plugin extends React.Component {
             {
               target ?
                 <>
-                  <div className="form-group">
-                    <select
-                      className="form-control"
-                      value={selected}
-                      onChange={(e) => this.setState({ selected: e.target.value })}
-                      disabled={isAnalyzig}
-                    >
-                      {contractList.map((x, i) =>
-                        <option key={i} value={x}>{x}</option>
-                      )}
-                    </select>
+                  <div className="form-inline">
+                    <div className="form-group">
+                      <select
+                        className="form-control"
+                        value={selected}
+                        onChange={(e) => this.setState({ selected: e.target.value })}
+                        disabled={isAnalyzig}
+                      >
+                        {contractList.map((x, i) =>
+                          <option key={i} value={x}>{x}</option>
+                        )}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <button
+                        type="button"
+                        className="form-control btn ml-2"
+                        title="Clear"
+                        onClick={this.clear}
+                        disabled={isAnalyzig}>
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <button
