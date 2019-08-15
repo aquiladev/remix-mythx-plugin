@@ -52,19 +52,19 @@ class App extends React.Component {
   render() {
     const { plugin, alerts } = this.state;
 
+    const content = plugin ?
+      <div style={{ position: 'relative', minHeight: '100vh' }}>
+        <main>
+          <Plugin client={client} addAlert={this.addAlert} />
+        </main>
+        <Footer isPlugin />
+        <Notifier alerts={alerts} onDismissed={this.onAlertDismissed} />
+      </div> :
+      <Home />;
+
     return (
       <>
-        {
-          plugin ?
-            <div style={{ position: 'relative', minHeight: '100vh' }}>
-              <main>
-                <Plugin client={client} addAlert={this.addAlert} />
-              </main>
-              <Footer isPlugin />
-              <Notifier alerts={alerts} onDismissed={this.onAlertDismissed} />
-            </div> :
-            <Home />
-        }
+        {content}
       </>
     );
   }
