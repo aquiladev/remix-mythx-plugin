@@ -57,7 +57,7 @@ const textSrcEntry2lineColumn = (srcEntry, lineBreakPositions) => {
  * @param {string} source - holds the contract code
  * @returns eslint-issue object
  */
-const issue2EsLint = (issue, source) => {
+const issue2EsLint = (issue, source, textLocations) => {
   let swcLink;
 
   if (!issue.swcID) {
@@ -67,13 +67,16 @@ const issue2EsLint = (issue, source) => {
   }
 
   const esIssue = {
+    mythxIssue: issue,
+    mythxTextLocations: textLocations,
+    sourceCode: source,
+
     fatal: false,
     ruleId: issue.swcID,
     ruleLink: swcLink,
     message: `${issue.description.head}`,
     description: `${issue.description.tail}`,
     severity: mythx2Severity[issue.severity] || 1,
-    mythXseverity: issue.severity,
     line: -1,
     column: 0,
     endLine: -1,
@@ -83,8 +86,8 @@ const issue2EsLint = (issue, source) => {
   let startLineCol, endLineCol;
   const lineBreakPositions = decoder.getLinebreakPositions(source);
 
-  if (issue.locations.length) {
-    const srcEntry = issue.locations[0].sourceMap.split(';')[0];
+  if (textLocations.length) {
+    const srcEntry = textLocations[0].sourceMap.split(';')[0];
     [startLineCol, endLineCol] = textSrcEntry2lineColumn(srcEntry, lineBreakPositions);
   }
 
@@ -100,19 +103,21 @@ const issue2EsLint = (issue, source) => {
 
 /**
  * Gets the source index from the issue sourcemap
- * @param {object} issue - issue item from the collection MythX analyze API output
+ * 
+ * @param {object[]} locations - array of text-only MythX API issue locations
  * @returns {number}
  */
-const getSourceIndex = issue => {
-  if (issue.locations.length) {
+const getSourceIndex = locations => {
+  if (locations.length) {
     const sourceMapRegex = /(\d+):(\d+):(\d+)/g;
-    const match = sourceMapRegex.exec(issue.locations[0].sourceMap);
+    const match = sourceMapRegex.exec(locations[0].sourceMap);
     // Ignore `-1` source index for compiler generated code
     return match ? match[3] : 0;
   }
 
   return 0;
 };
+
 
 /**
  * Converts MythX analyze API output item to Eslint compatible object
@@ -122,20 +127,23 @@ const getSourceIndex = issue => {
  */
 const convertMythXReport2EsIssue = (report, mapping, data) => {
   const { issues, sourceList } = report;
+  const { sources, functionHashes } = data;
   const results = {};
+
+  const textLocationFilterFn = location => (
+    (location.sourceType === 'solidity-file')
+    &&
+    (location.sourceFormat === 'text')
+  );
 
   // eslint-disable-next-line array-callback-return
   issues.map(issue => {
-    const sourceIndex = getSourceIndex(issue);
+    const textLocations = issue.locations.filter(textLocationFilterFn);
+    const sourceIndex = getSourceIndex(textLocations);
 
-    /**
-     * MythX API sends `sourceList` with `/` added in the contract name
-     * Example: sourceList: [ 'token.sol', '/token.sol' ]
-     *
-     * TODO: Remove the `replace` hack by fixing the `sourceList` response from MythX API
-     */
-    const file = sourceList[sourceIndex].replace(/^\//, '');
+    const file = sourceList[sourceIndex];
     const filePath = mapping[file] || file;
+    const sourceCode = (sources[filePath] || {}).content;
 
     if (!results[filePath]) {
       results[filePath] = {
@@ -144,13 +152,15 @@ const convertMythXReport2EsIssue = (report, mapping, data) => {
         fixableErrorCount: 0,
         fixableWarningCount: 0,
         filePath,
+        functionHashes,
+        sourceCode,
         messages: [],
       };
     }
 
     let message = { error: 'File not found' };
-    if (data.sources[filePath]) {
-      message = issue2EsLint(issue, data.sources[filePath].content);
+    if (sources[filePath]) {
+      message = issue2EsLint(issue, sources[filePath].content, textLocations);
     }
 
     results[filePath].messages.push({ ...message, sourceType: report.sourceType });

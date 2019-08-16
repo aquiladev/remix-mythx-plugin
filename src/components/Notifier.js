@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { AlertList } from 'react-bs-notifier';
 
-function Notifier({ alerts, onDismissed }) {
+function Notifier({ alerts, onDismiss }) {
   return (
     <AlertList
       position='bottom-right'
       alerts={alerts}
       timeout={3000}
-      onDismiss={onDismissed}
+      onDismiss={onDismiss}
       showIcon={false}
     />
   );
@@ -16,7 +16,7 @@ function Notifier({ alerts, onDismissed }) {
 
 Notifier.propTypes = {
   alerts: PropTypes.array.isRequired,
-  onDismissed: PropTypes.func.isRequired
+  onDismiss: PropTypes.func.isRequired
 };
 
 export default Notifier;
