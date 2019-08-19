@@ -66,10 +66,6 @@ class App extends React.Component {
       client.on('solidity', 'compilationFinished', (target, source, _, data) => {
         this.processCompilation(target, source, data);
       });
-
-      client.on('fileManager', 'currentFileChanged', (fileName) => {
-        console.log('currentFileChanged', fileName)
-      })
     })
 
     this.processCompilation = this.processCompilation.bind(this);
