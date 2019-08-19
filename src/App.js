@@ -48,7 +48,7 @@ class App extends React.Component {
     client.onload(() => {
       this.setState({ pluginOpen: true });
 
-      client.call("solidity", "getCompilationResult")
+      client.call('solidity', 'getCompilationResult')
         .then((result) => {
           if (!result) {
             return;
@@ -66,6 +66,10 @@ class App extends React.Component {
       client.on('solidity', 'compilationFinished', (target, source, _, data) => {
         this.processCompilation(target, source, data);
       });
+
+      client.on('fileManager', 'currentFileChanged', (fileName) => {
+        console.log('currentFileChanged', fileName)
+      })
     })
 
     this.processCompilation = this.processCompilation.bind(this);
@@ -123,7 +127,7 @@ class App extends React.Component {
     const { address, pwd, compilations, selected, analyses, reports } = this.state;
     const [target] = selected.split(separator);
 
-    const mythx = new Client(address, pwd, "remythx");
+    const mythx = new Client(address, pwd, 'remythx');
     const jwt = await this.login(mythx);
 
     this.setState({
@@ -131,7 +135,7 @@ class App extends React.Component {
       isAnalyzig: true,
       jwt
     });
-    await client.call("editor", "discardHighlight");
+    await client.call('editor', 'discardHighlight');
 
     try {
       const options = this.getRequestData();
@@ -194,7 +198,7 @@ class App extends React.Component {
       sourceMap: bytecode.sourceMap,
       deployedBytecode: deployedBytecode.object,
       deployedSourceMap: deployedBytecode.sourceMap,
-      analysisMode: "quick",
+      analysisMode: 'quick',
       mainSource: target,
       sourceList: Object.keys(source.sources),
       sources: {}
@@ -253,7 +257,7 @@ class App extends React.Component {
       end: { line: message.endLine, column: message.endCol }
     }
     const color = message.severity === 1 ? '#ffd300' : '#ff0000';
-    await client.call("editor", "highlight", position, issue.filePath, color);
+    await client.call('editor', 'highlight', position, issue.filePath, color);
   }
 
   clear() {
