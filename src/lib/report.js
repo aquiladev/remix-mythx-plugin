@@ -57,7 +57,7 @@ const textSrcEntry2lineColumn = (srcEntry, lineBreakPositions) => {
  * @param {string} source - holds the contract code
  * @returns eslint-issue object
  */
-const issue2EsLint = (issue, source, textLocations) => {
+const issue2EsLint = (issue, source, locations) => {
   let swcLink;
 
   if (!issue.swcID) {
@@ -67,10 +67,6 @@ const issue2EsLint = (issue, source, textLocations) => {
   }
 
   const esIssue = {
-    mythxIssue: issue,
-    mythxTextLocations: textLocations,
-    sourceCode: source,
-
     fatal: false,
     ruleId: issue.swcID,
     ruleLink: swcLink,
@@ -81,21 +77,25 @@ const issue2EsLint = (issue, source, textLocations) => {
     column: 0,
     endLine: -1,
     endCol: 0,
+    sourceType: ''
   };
 
-  let startLineCol, endLineCol;
-  const lineBreakPositions = decoder.getLinebreakPositions(source);
+  if (source) {
+    let startLineCol, endLineCol;
+    const lineBreakPositions = decoder.getLinebreakPositions(source);
 
-  if (textLocations.length) {
-    const srcEntry = textLocations[0].sourceMap.split(';')[0];
-    [startLineCol, endLineCol] = textSrcEntry2lineColumn(srcEntry, lineBreakPositions);
-  }
+    if (locations.length) {
+      const srcEntry = locations[0].sourceMap.split(';')[0];
+      [startLineCol, endLineCol] = textSrcEntry2lineColumn(srcEntry, lineBreakPositions);
+      esIssue.sourceType = locations[0].sourceType;
+    }
 
-  if (startLineCol) {
-    esIssue.line = startLineCol.line;
-    esIssue.column = startLineCol.column;
-    esIssue.endLine = endLineCol.line;
-    esIssue.endCol = endLineCol.column;
+    if (startLineCol) {
+      esIssue.line = startLineCol.line;
+      esIssue.column = startLineCol.column;
+      esIssue.endLine = endLineCol.line;
+      esIssue.endCol = endLineCol.column;
+    }
   }
 
   return esIssue;
@@ -126,7 +126,7 @@ const getSourceIndex = locations => {
  * @returns {object}
  */
 const convertMythXReport2EsIssue = (report, mapping, data) => {
-  const { issues, sourceList } = report;
+  const { issues } = report;
   const { sources, functionHashes } = data;
   const results = {};
 
@@ -138,12 +138,25 @@ const convertMythXReport2EsIssue = (report, mapping, data) => {
 
   // eslint-disable-next-line array-callback-return
   issues.map(issue => {
-    const textLocations = issue.locations.filter(textLocationFilterFn);
-    const sourceIndex = getSourceIndex(textLocations);
+    const locations = issue.locations.filter(textLocationFilterFn);
+    const location = locations.length ? locations[0] : undefined;
 
-    const file = sourceList[sourceIndex];
-    const filePath = mapping[file] || file;
-    const sourceCode = (sources[filePath] || {}).content;
+    let sourceCode = '';
+    let filePath = '<unknown>';
+
+    if (location) {
+      const sourceList = location.sourceList || report.sourceList || [];
+      const sourceIndex = getSourceIndex(location);
+      const fileName = sourceList[sourceIndex];
+
+      if (fileName) {
+        filePath = mapping[fileName] || fileName;
+
+        if (sources[filePath]) {
+          sourceCode = sources[filePath].content;
+        }
+      }
+    }
 
     if (!results[filePath]) {
       results[filePath] = {
@@ -158,12 +171,8 @@ const convertMythXReport2EsIssue = (report, mapping, data) => {
       };
     }
 
-    let message = { error: 'File not found' };
-    if (sources[filePath]) {
-      message = issue2EsLint(issue, sources[filePath].content, textLocations);
-    }
-
-    results[filePath].messages.push({ ...message, sourceType: report.sourceType });
+    let message = issue2EsLint(issue, (sources[filePath] || {}).content, locations);
+    results[filePath].messages.push(message);
   });
 
   for (let k in results) {

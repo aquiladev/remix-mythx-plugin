@@ -200,22 +200,12 @@ class App extends React.Component {
       sources: {}
     };
 
-    var useAST = Object.keys(sources).reduce(function (flag, s) {
-      return flag && !!sources[s].ast;
-    }, true);
+    for (let key in source.sources) {
+      if (source.sources.hasOwnProperty(key)) {
+        const ast = sources[key].ast;
+        const src = source.sources[key].content;
 
-    if (useAST) {
-      for (let key in source.sources) {
-        if (source.sources.hasOwnProperty(key)) {
-          request.sources[key] = { ast: sources[key].ast };
-        }
-      }
-    }
-    else {
-      for (let key in source.sources) {
-        if (source.sources.hasOwnProperty(key)) {
-          request.sources[key] = { source: source.sources[key].content };
-        }
+        request.sources[key] = { ast, source: src };
       }
     }
 
@@ -248,6 +238,10 @@ class App extends React.Component {
   }
 
   highlightIssue = async (issue, message) => {
+    if (message.line < 0) {
+      return;
+    }
+
     const position = {
       start: { line: message.line, column: message.column },
       end: { line: message.endLine, column: message.endCol }
