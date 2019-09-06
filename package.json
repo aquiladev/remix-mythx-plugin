@@ -27,7 +27,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "release": "release-it --no-npm.publish"
+    "release": "release-it --no-npm.publish --github.release"
   },
   "eslintConfig": {
     "extends": "react-app"
