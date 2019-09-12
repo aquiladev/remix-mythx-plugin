@@ -175,6 +175,7 @@ const convertMythXReport2EsIssue = (report, mapping, data) => {
     results[filePath].messages.push(message);
   });
 
+  // eslint-disable-next-line no-unused-vars
   for (let k in results) {
     if (results.hasOwnProperty(k)) {
       results[k].warningCount = results[k].messages.reduce((acc, { fatal, severity }) =>

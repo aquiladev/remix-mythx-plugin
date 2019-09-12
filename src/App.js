@@ -200,6 +200,7 @@ class App extends React.Component {
       sources: {}
     };
 
+    // eslint-disable-next-line no-unused-vars
     for (let key in source.sources) {
       if (source.sources.hasOwnProperty(key)) {
         const ast = sources[key].ast;
