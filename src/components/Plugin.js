@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faInfoCircle,
   faAngleRight,
   faAngleDown,
   faClipboard,
@@ -12,6 +10,7 @@ import {
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import Report from './Report';
+import InfoIcon from './InfoIcon';
 
 const separator = '::';
 
@@ -22,9 +21,7 @@ class Plugin extends React.Component {
     this.state = {
       address: props.address,
       pwd: props.pwd,
-      creadOpen: props.address === '0x0000000000000000000000000000000000000000',
-      infoTooltipOpen: false,
-      analysisTooltipOpen: false
+      creadOpen: props.address === '0x0000000000000000000000000000000000000000'
     };
 
     this.saveCredentials = this.saveCredentials.bind(this);
@@ -36,7 +33,7 @@ class Plugin extends React.Component {
   }
 
   render() {
-    const { address, pwd, creadOpen, infoTooltipOpen, analysisTooltipOpen } = this.state;
+    const { address, pwd, creadOpen } = this.state;
     const { contractList, selected, isAnalyzig, analyses, reports, selectContract, analyze, addAlert, highlightIssue, clear } = this.props;
     const [target] = selected.split(separator);
 
@@ -48,20 +45,20 @@ class Plugin extends React.Component {
               style={{ cursor: "pointer" }}
               onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
               Credentials
-              <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="cred_info" />
               <div style={{ position: 'absolute', right: 24, top: 4 }}>
                 {creadOpen ? <span style={{ fontSize: 14, lineHeight: '16px', paddingRight: 6 }}>hide</span> : null}
                 <FontAwesomeIcon icon={creadOpen ? faAngleDown : faAngleRight} className='pt-1' />
               </div>
-              <Tooltip placement="right"
-                isOpen={infoTooltipOpen}
-                autohide={false}
-                target="cred_info"
-                toggle={() => { this.setState({ infoTooltipOpen: !infoTooltipOpen }); }}>
-                In order to use MythX APIs you need to have credentials.
-                You can use the trial credential, but analysis's result will be limited.
-                In order to get credential you need to <a href="https://mythx.io/" target="_blank" rel="noopener noreferrer" className="text-nowrap">sign up</a>
-              </Tooltip>
+              <InfoIcon id='cred_info' placement='right'>
+                <div>In order to use MythX</div>
+                <div>APIs you need to have</div>
+                <div>credentials. You can use</div>
+                <div>the trial credential, but</div>
+                <div>analysis's result will be</div>
+                <div>limited. In order to get</div>
+                <div>credential you need to</div>
+                <div><a href="https://mythx.io/" target="_blank" rel="noopener noreferrer" className="text-nowrap">sign up</a></div>
+              </InfoIcon>
             </div>
             <div className={creadOpen ? null : "collapse"}>
               <form>
@@ -142,16 +139,10 @@ class Plugin extends React.Component {
                         <div style={{ fontSize: 14, fontWeight: 'bold' }}>
                           We are analyzing your contract. This should take up to 2 minutes
                         </div> :
-                        <>
-                          <FontAwesomeIcon className="ml-2" icon={faInfoCircle} id="analysis_info" />
-                          <Tooltip placement="right"
-                            isOpen={analysisTooltipOpen}
-                            autohide={true}
-                            target="analysis_info"
-                            toggle={() => { this.setState({ analysisTooltipOpen: !analysisTooltipOpen }); }}>
-                            Analysis can take couple of minutes
-                          </Tooltip>
-                        </>
+                        <InfoIcon id='analysis_info' placement='right'>
+                          <div>Analysis can take couple</div>
+                          <div>of minutes</div>
+                        </InfoIcon>
                     }
                     {
                       analyses[selected] && <CopyToClipboard
