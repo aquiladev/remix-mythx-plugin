@@ -7,9 +7,11 @@ import {
   faClipboard,
   faTrash
 } from '@fortawesome/free-solid-svg-icons';
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import Report from './Report';
+import Output from './Output';
 import InfoIcon from './InfoIcon';
 
 const separator = '::';
@@ -34,7 +36,20 @@ class Plugin extends React.Component {
 
   render() {
     const { address, pwd, creadOpen } = this.state;
-    const { contractList, selected, isAnalyzig, analyses, reports, selectContract, analyze, addAlert, highlightIssue, clear } = this.props;
+    const {
+      contractList,
+      selected,
+      isAnalyzig,
+      analyses,
+      reports,
+      selectContract,
+      pluginActiveTab,
+      analyze,
+      addAlert,
+      highlightIssue,
+      clear,
+      changeTab
+    } = this.props;
     const [target] = selected.split(separator);
 
     return (
@@ -126,32 +141,32 @@ class Plugin extends React.Component {
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={analyze}
+                      onClick={() => analyze()}
                       disabled={isAnalyzig}>
                       {
                         isAnalyzig ?
                           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> :
-                          <span>Analyze</span>
+                          <div>
+                            Analyze
+                            <InfoIcon id='analysis_info' placement='right'>
+                              <div>Analysis can take couple</div>
+                              <div>of minutes</div>
+                            </InfoIcon>
+                          </div>
                       }
                     </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary ml-2"
+                      onClick={() => analyze('full')}
+                      disabled={isAnalyzig}>
+                      Run full mode
+                    </button>
                     {
-                      isAnalyzig ?
-                        <div style={{ fontSize: 14, fontWeight: 'bold' }}>
-                          We are analyzing your contract. This should take up to 2 minutes
-                        </div> :
-                        <InfoIcon id='analysis_info' placement='right'>
-                          <div>Analysis can take couple</div>
-                          <div>of minutes</div>
-                        </InfoIcon>
-                    }
-                    {
-                      analyses[selected] && <CopyToClipboard
-                        text={JSON.stringify(analyses[selected])}
-                        onCopy={() => addAlert('success', 'Copied')}>
-                        <button type="button" className="btn float-right" title="Copy raw report to clipboard">
-                          <FontAwesomeIcon className="ml-2" icon={faClipboard} /><span className="pl-1">Raw report</span>
-                        </button>
-                      </CopyToClipboard>
+                      isAnalyzig &&
+                      <div style={{ fontSize: 14, fontWeight: 'bold' }}>
+                        We are analyzing your contract. This should take up to 2 minutes
+                      </div>
                     }
                   </div>
                 </> :
@@ -161,7 +176,46 @@ class Plugin extends React.Component {
             }
           </div>
         </div>
-        <Report report={reports[selected] || {}} highlightIssue={highlightIssue} />
+        <Nav tabs className="pt-1">
+          <NavItem>
+            <NavLink
+              href="#"
+              className={pluginActiveTab === 'output' ? 'active' : null}
+              onClick={() => changeTab('output')}
+            >
+              Output
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              href="#"
+              className={pluginActiveTab === 'report' ? 'active' : null}
+              onClick={() => changeTab('report')}
+            >
+              Report
+            </NavLink>
+          </NavItem>
+        </Nav>
+        <TabContent activeTab={pluginActiveTab}>
+          <TabPane tabId='output'>
+            <Output log={this.props.log} />
+          </TabPane>
+          <TabPane tabId='report'>
+            {
+              analyses[selected] &&
+              <div className="text-right">
+                <CopyToClipboard
+                  text={JSON.stringify(analyses[selected])}
+                  onCopy={() => addAlert('success', 'Copied')}>
+                  <button type="button" className="btn" title="Copy raw report to clipboard">
+                    <FontAwesomeIcon className="ml-2" icon={faClipboard} /><span className="pl-1">Raw report</span>
+                  </button>
+                </CopyToClipboard>
+              </div>
+            }
+            <Report report={reports[selected] || {}} highlightIssue={highlightIssue} />
+          </TabPane>
+        </TabContent>
       </div>
     );
   }
@@ -177,7 +231,8 @@ Plugin.propTypes = {
   saveCredentials: PropTypes.func.isRequired,
   selectContract: PropTypes.func.isRequired,
   highlightIssue: PropTypes.func.isRequired,
-  clear: PropTypes.func.isRequired
+  clear: PropTypes.func.isRequired,
+  changeTab: PropTypes.func.isRequired,
 };
 
 export default Plugin;

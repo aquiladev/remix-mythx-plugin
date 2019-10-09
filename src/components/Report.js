@@ -11,7 +11,7 @@ function Report({ report, highlightIssue }) {
     <>
       {
         report.message &&
-        <div className="row mt-3">
+        <div className="row">
           <div className="col-md-6 offset-md-3">
             <div className="alert alert-success w-100" role="alert">
               {report.message}
@@ -21,7 +21,7 @@ function Report({ report, highlightIssue }) {
       }
       {
         report.list &&
-        <div className="row mt-3">
+        <div className="row">
           <div className="col-md-6 offset-md-3">
             {
               report.list.map((x, i) => {

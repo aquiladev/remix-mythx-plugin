@@ -26,13 +26,13 @@ class App extends React.Component {
     super(props);
 
     const raw = localStorage.getItem(storageKey) || '{}';
-    const settings = JSON.parse(raw);
-    const address = settings.address || TRIAL_CREDS.address;
+    const appState = JSON.parse(raw);
+    const address = appState.address || TRIAL_CREDS.address;
 
     this.state = {
       pluginOpen: false,
       address,
-      pwd: settings.pwd || TRIAL_CREDS.pwd,
+      pwd: appState.pwd || TRIAL_CREDS.pwd,
       jwt: null,
       compilations: {},
       selected: '',
@@ -41,7 +41,9 @@ class App extends React.Component {
       isAnalyzig: false,
       analyses: {},
       reports: {},
-      alerts: []
+      alerts: [],
+      log: appState.log || [],
+      pluginActiveTab: 'output'
     };
 
     client = createIframeClient();
@@ -71,6 +73,7 @@ class App extends React.Component {
     this.processCompilation = this.processCompilation.bind(this);
     this.login = this.login.bind(this);
     this.saveCredentials = this.saveCredentials.bind(this);
+    this.logAnalysis = this.logAnalysis.bind(this);
     this.analyze = this.analyze.bind(this);
     this.getRequestData = this.getRequestData.bind(this);
     this.handleResult = this.handleResult.bind(this);
@@ -119,7 +122,23 @@ class App extends React.Component {
     this.addAlert('success', 'Saved');
   }
 
-  analyze = async () => {
+  logAnalysis(uuid, mode) {
+    const raw = localStorage.getItem(storageKey) || '{}';
+    const state = JSON.parse(raw);
+    const newState = {
+      ...state,
+      ...{
+        log: [
+          { timestamp: new Date().getTime(), uuid, mode },
+          ...(state.log || [])
+        ]
+      }
+    }
+    localStorage.setItem(storageKey, JSON.stringify(newState));
+    this.setState({ log: newState.log });
+  }
+
+  analyze = async (mode = 'quick') => {
     const { address, pwd, compilations, selected, analyses, reports } = this.state;
     const [target] = selected.split(separator);
 
@@ -134,16 +153,26 @@ class App extends React.Component {
     await client.call('editor', 'discardHighlight');
 
     try {
-      const options = this.getRequestData();
+      const options = this.getRequestData(mode);
       const analysis = await mythx.analyze(options);
-      const issues = await mythx.getDetectedIssues(analysis.uuid);
+      this.logAnalysis(analysis.uuid, mode);
 
-      this.setState({
-        analyses: { ...analyses, [selected]: issues },
-        isAnalyzig: false
-      });
+      if (mode === 'quick') {
+        const issues = await mythx.getDetectedIssues(analysis.uuid);
 
-      this.handleResult(compilations[target].source, issues);
+        this.setState({
+          analyses: { ...analyses, [selected]: issues },
+          isAnalyzig: false,
+          pluginActiveTab: 'report'
+        });
+
+        this.handleResult(compilations[target].source, issues);
+      } else {
+        this.setState({
+          isAnalyzig: false,
+          pluginActiveTab: 'output'
+        });
+      }
     } catch (err) {
       this.setState({
         analyses: { ...analyses, [selected]: null },
@@ -179,7 +208,7 @@ class App extends React.Component {
     return client.login();
   }
 
-  getRequestData() {
+  getRequestData(mode) {
     const { compilations, selected } = this.state;
     const [target, contract] = selected.split(separator);
     const { data = {}, source = {} } = compilations[target];
@@ -194,7 +223,7 @@ class App extends React.Component {
       sourceMap: bytecode.sourceMap,
       deployedBytecode: deployedBytecode.object,
       deployedSourceMap: deployedBytecode.sourceMap,
-      analysisMode: 'quick',
+      analysisMode: mode,
       mainSource: target,
       sourceList: Object.keys(source.sources),
       sources: {}
@@ -299,7 +328,8 @@ class App extends React.Component {
             analyze={this.analyze}
             addAlert={this.addAlert}
             highlightIssue={this.highlightIssue}
-            clear={this.clear} />
+            clear={this.clear}
+            changeTab={(tab) => { this.setState({ pluginActiveTab: tab }) }} />
         </main>
         <Footer isPlugin />
         <Notifier alerts={alerts} onDismiss={this.dismissAlert} />
