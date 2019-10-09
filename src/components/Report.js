@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 
-import ExternalLink from './ExternalLink';
 import { isFatal } from './../lib/eslint';
 
 function Report({ report, highlightIssue }) {
@@ -52,7 +51,7 @@ function Report({ report, highlightIssue }) {
                                     }
                                     <span className="pr-2">{`[${m.line + 1}:${m.column}]`}</span>
                                     <span title={`${m.description}`} style={{ cursor: 'help' }}>{`${m.message}`}</span>
-                                    {m.ruleId && <ExternalLink id={`i${i}_${j}`} href={m.ruleLink} className="pl-1" target="_blank" rel="noopener noreferrer">[{m.ruleId}]</ExternalLink>}
+                                    {m.ruleId && <a href={m.ruleLink} className="pl-1" target="_blank" rel="noopener noreferrer">[{m.ruleId}]</a>}
                                   </button>
                                 </>
                             }

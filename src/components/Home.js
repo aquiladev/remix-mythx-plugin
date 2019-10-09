@@ -16,7 +16,7 @@ function Home() {
               style={{ textAlign: 'center' }}>re:MythX</h1>
           </div>
         </div>
-        <div className='text-center pt-4'>
+        <div className='d-flex justify-content-center pt-4'>
           <a href='https://remix.ethereum.org' target='_blank' rel='noopener noreferrer'>
             <img src={remixLogo} alt='remix' style={{ height: 120, width: 120, verticalAlign: 'top' }} />
           </a>
