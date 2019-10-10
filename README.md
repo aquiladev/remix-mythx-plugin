@@ -36,8 +36,16 @@ When the report is received you will see a list of issues. You can click on an i
 # Troubleshooting
 1. If you run the plugin locally on Chrome, you may face with a white screen issue. The issue happens when a plugin uses more than 10% of the allocated resources for a page. In such a way browser detect and prevent malicious behavior of non-origin content, which is rendered in iframe on the page. The browser stops rendering of the content and waits until the sub-frame process stops using so many resources. 
 
-    Solutions:
+    **Solutions:**
 
-        1. Make sure that you build the plugin for the production environment
+    1. Make sure that you build the plugin for the production environment
     
-        2. Make sure that your React Chrome extension is disabled
+    2. Make sure that your React Chrome extension is disabled
+
+2. Brave browser error:
+
+    ```Failed to read the 'localStorage' property from 'Window': Access is denied for this document.```
+
+    **Solution:**
+
+    Set `Cookies` setting to `Allow all cookies` on `chrome://settings/shields` page
