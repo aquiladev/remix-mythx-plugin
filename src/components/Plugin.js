@@ -11,7 +11,7 @@ import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import Report from './Report';
-import Output from './Output';
+import Log from './Log';
 import InfoIcon from './InfoIcon';
 
 const separator = '::';
@@ -180,10 +180,10 @@ class Plugin extends React.Component {
           <NavItem>
             <NavLink
               href="#"
-              className={pluginActiveTab === 'output' ? 'active' : null}
-              onClick={() => changeTab('output')}
+              className={pluginActiveTab === 'log' ? 'active' : null}
+              onClick={() => changeTab('log')}
             >
-              Output
+              Log
             </NavLink>
           </NavItem>
           <NavItem>
@@ -197,8 +197,8 @@ class Plugin extends React.Component {
           </NavItem>
         </Nav>
         <TabContent activeTab={pluginActiveTab}>
-          <TabPane tabId='output'>
-            <Output log={this.props.log} />
+          <TabPane tabId='log'>
+            <Log list={this.props.log} />
           </TabPane>
           <TabPane tabId='report'>
             {

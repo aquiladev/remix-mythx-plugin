@@ -43,7 +43,7 @@ class App extends React.Component {
       reports: {},
       alerts: [],
       log: appState.log || [],
-      pluginActiveTab: 'output'
+      pluginActiveTab: 'log'
     };
 
     client = createIframeClient();
@@ -170,7 +170,7 @@ class App extends React.Component {
       } else {
         this.setState({
           isAnalyzig: false,
-          pluginActiveTab: 'output'
+          pluginActiveTab: 'log'
         });
       }
     } catch (err) {
