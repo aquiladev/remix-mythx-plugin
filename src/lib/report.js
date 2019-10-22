@@ -63,7 +63,7 @@ const issue2EsLint = (issue, source, locations) => {
   if (!issue.swcID) {
     swcLink = 'N/A';
   } else {
-    swcLink = 'https://smartcontractsecurity.github.io/SWC-registry/docs/' + issue.swcID;
+    swcLink = 'https://swcregistry.io/docs/' + issue.swcID;
   }
 
   const esIssue = {
