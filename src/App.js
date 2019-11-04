@@ -153,7 +153,6 @@ class App extends React.Component {
       });
       await client.call('editor', 'discardHighlight');
 
-
       const options = this.getRequestData(mode);
       const analysis = await mythx.analyze(options);
       this.logAnalysis(analysis.uuid, mode);
