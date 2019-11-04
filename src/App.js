@@ -142,17 +142,18 @@ class App extends React.Component {
     const { address, pwd, compilations, selected, analyses, reports } = this.state;
     const [target] = selected.split(separator);
 
-    const mythx = new Client(address, pwd, 'remythx');
-    const jwt = await this.login(mythx);
-
-    this.setState({
-      analyses: { ...analyses, [selected]: null },
-      isAnalyzig: true,
-      jwt
-    });
-    await client.call('editor', 'discardHighlight');
-
     try {
+      const mythx = new Client(address, pwd, 'remythx');
+      const jwt = await this.login(mythx);
+
+      this.setState({
+        analyses: { ...analyses, [selected]: null },
+        isAnalyzig: true,
+        jwt
+      });
+      await client.call('editor', 'discardHighlight');
+
+
       const options = this.getRequestData(mode);
       const analysis = await mythx.analyze(options);
       this.logAnalysis(analysis.uuid, mode);
@@ -186,7 +187,8 @@ class App extends React.Component {
             }]
           }
         },
-        isAnalyzig: false
+        isAnalyzig: false,
+        pluginActiveTab: 'report'
       });
     }
   }
