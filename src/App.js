@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import Notifier from './components/Notifier';
 import Home from './components/Home';
 import { formatIssues } from './lib/report';
+import utils from './lib/utils';
 
 const separator = '::';
 const storageKey = 'remix-mythx-plugin';
@@ -220,9 +221,9 @@ class App extends React.Component {
     const deployedBytecode = file[contract].evm.deployedBytecode;
     const request = {
       contractName: contract,
-      bytecode: bytecode.object,
+      bytecode: utils.replaceLinkedLibs(bytecode.object),
       sourceMap: bytecode.sourceMap,
-      deployedBytecode: deployedBytecode.object,
+      deployedBytecode: utils.replaceLinkedLibs(deployedBytecode.object),
       deployedSourceMap: deployedBytecode.sourceMap,
       analysisMode: mode,
       mainSource: target,
