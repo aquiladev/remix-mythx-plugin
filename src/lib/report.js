@@ -77,7 +77,8 @@ const issue2EsLint = (issue, source, locations) => {
     column: 0,
     endLine: -1,
     endCol: 0,
-    sourceType: ''
+    sourceType: '',
+    origin: issue
   };
 
   if (source) {

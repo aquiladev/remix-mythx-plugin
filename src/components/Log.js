@@ -16,7 +16,7 @@ function Log({ list = [] }) {
                 <span className='pr-2 text-secondary'>[{moment(x.timestamp).format('L LTS')}]</span>
                 {x.mode === 'full' ? <FontAwesomeIcon icon={faClock} className='mr-2' /> : null}
                 Your <b>{x.mode}</b> analysis has been submitted! Please see your results at
-              <a href={link} className="pl-1" target="_blank" rel="noopener noreferrer">{x.uuid}</a>
+                <a href={link} className='pl-1' target='_blank' rel='noopener noreferrer'>{x.uuid}</a>
               </div>
             );
           })

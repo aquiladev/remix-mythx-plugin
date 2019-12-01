@@ -9,7 +9,7 @@ function InfoIcon({ children, placement, ...props }) {
 
   return (
     <>
-      <FontAwesomeIcon className="ml-2" icon={faInfoCircle} {...props} />
+      <FontAwesomeIcon className='ml-2' icon={faInfoCircle} {...props} />
       <Tooltip placement={placement}
         isOpen={isOpen}
         autohide={false}

@@ -53,11 +53,11 @@ class Plugin extends React.Component {
     const [target] = selected.split(separator);
 
     return (
-      <div className="container">
-        <div className="row border-bottom pb-3">
-          <div className="col-md-6 offset-md-3">
-            <div className="btn btn-light btn-block text-left rounded-0 border-0"
-              style={{ cursor: "pointer" }}
+      <div className='container'>
+        <div className='row border-bottom pb-3'>
+          <div className='col-md-6 offset-md-3'>
+            <div className='btn btn-light btn-block text-left rounded-0 border-0'
+              style={{ cursor: 'pointer' }}
               onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
               Credentials
               <div style={{ position: 'absolute', right: 24, top: 4 }}>
@@ -72,35 +72,35 @@ class Plugin extends React.Component {
                 <div>analysis's result will be</div>
                 <div>limited. In order to get</div>
                 <div>credential you need to</div>
-                <div><a href="https://mythx.io/" target="_blank" rel="noopener noreferrer" className="text-nowrap">sign up</a></div>
+                <div><a href='https://mythx.io/' target='_blank' rel='noopener noreferrer' className='text-nowrap'>sign up</a></div>
               </InfoIcon>
             </div>
-            <div className={creadOpen ? null : "collapse"}>
+            <div className={creadOpen ? null : 'collapse'}>
               <form>
-                <div className="form-group">
-                  <label htmlFor="address">Address</label>
+                <div className='form-group'>
+                  <label htmlFor='address'>Address</label>
                   <input
-                    type="text"
-                    className="form-control"
-                    id="address"
-                    aria-describedby="emailHelp"
-                    placeholder="Address"
+                    type='text'
+                    className='form-control'
+                    id='address'
+                    aria-describedby='emailHelp'
+                    placeholder='Address'
                     onChange={(e) => this.setState({ address: e.target.value })}
                     defaultValue={address} />
                 </div>
-                <div className="form-group">
-                  <label htmlFor="pwd">Password</label>
+                <div className='form-group'>
+                  <label htmlFor='pwd'>Password</label>
                   <input
-                    type="password"
-                    className="form-control"
-                    id="pwd"
-                    placeholder="Password"
+                    type='password'
+                    className='form-control'
+                    id='pwd'
+                    placeholder='Password'
                     onChange={(e) => this.setState({ pwd: e.target.value })}
                     defaultValue={pwd} />
                 </div>
                 <button
-                  type="button"
-                  className="btn btn-primary"
+                  type='button'
+                  className='btn btn-primary'
                   onClick={this.saveCredentials}>
                   Save
                 </button>
@@ -108,15 +108,15 @@ class Plugin extends React.Component {
             </div>
           </div>
         </div>
-        <div className="row mt-3">
-          <div className="col-md-6 offset-md-3">
+        <div className='row mt-3'>
+          <div className='col-md-6 offset-md-3'>
             {
               target ?
                 <>
-                  <div className="d-flex pb-3">
-                    <div className="w-100">
+                  <div className='d-flex pb-3'>
+                    <div className='w-100'>
                       <select
-                        className="form-control"
+                        className='form-control'
                         value={selected}
                         onChange={(e) => selectContract(e.target.value)}
                         disabled={isAnalyzig}
@@ -126,11 +126,11 @@ class Plugin extends React.Component {
                         )}
                       </select>
                     </div>
-                    <div className="flex-shrink-1">
+                    <div className='flex-shrink-1'>
                       <button
-                        type="button"
-                        className="form-control btn ml-2"
-                        title="Clear"
+                        type='button'
+                        className='form-control btn ml-2'
+                        title='Clear'
                         onClick={clear}
                         disabled={isAnalyzig}>
                         <FontAwesomeIcon icon={faTrash} />
@@ -139,13 +139,13 @@ class Plugin extends React.Component {
                   </div>
                   <div>
                     <button
-                      type="button"
-                      className="btn btn-primary"
+                      type='button'
+                      className='btn btn-primary'
                       onClick={() => analyze()}
                       disabled={isAnalyzig}>
                       {
                         isAnalyzig ?
-                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> :
+                          <span className='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> :
                           <div>
                             Analyze
                             <InfoIcon id='analysis_info' placement='right'>
@@ -156,8 +156,8 @@ class Plugin extends React.Component {
                       }
                     </button>
                     <button
-                      type="button"
-                      className="btn btn-primary ml-2"
+                      type='button'
+                      className='btn btn-primary ml-2'
                       onClick={() => analyze('full')}
                       disabled={isAnalyzig}>
                       Run full mode
@@ -170,16 +170,16 @@ class Plugin extends React.Component {
                     }
                   </div>
                 </> :
-                <div className="alert alert-warning w-100" role="alert">
+                <div className='alert alert-warning w-100' role='alert'>
                   You need to compile your contract first!
                 </div>
             }
           </div>
         </div>
-        <Nav tabs className="pt-1">
+        <Nav tabs className='pt-1'>
           <NavItem>
             <NavLink
-              href="#"
+              href='#'
               className={pluginActiveTab === 'log' ? 'active' : null}
               onClick={() => changeTab('log')}
             >
@@ -188,7 +188,7 @@ class Plugin extends React.Component {
           </NavItem>
           <NavItem>
             <NavLink
-              href="#"
+              href='#'
               className={pluginActiveTab === 'report' ? 'active' : null}
               onClick={() => changeTab('report')}
             >
@@ -203,12 +203,12 @@ class Plugin extends React.Component {
           <TabPane tabId='report'>
             {
               analyses[selected] &&
-              <div className="text-right">
+              <div className='text-right'>
                 <CopyToClipboard
                   text={JSON.stringify(analyses[selected])}
                   onCopy={() => addAlert('success', 'Copied')}>
-                  <button type="button" className="btn" title="Copy raw report to clipboard">
-                    <FontAwesomeIcon className="ml-2" icon={faClipboard} /><span className="pl-1">Raw report</span>
+                  <button type='button' className='btn' title='Copy raw report to clipboard'>
+                    <FontAwesomeIcon className='ml-2' icon={faClipboard} /><span className='pl-1'>Raw report</span>
                   </button>
                 </CopyToClipboard>
               </div>
