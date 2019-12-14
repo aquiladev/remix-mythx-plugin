@@ -1,12 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faAngleRight,
-  faAngleDown,
-  faClipboard,
-  faTrash
-} from '@fortawesome/free-solid-svg-icons';
+import { faClipboard, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -17,25 +12,7 @@ import InfoIcon from './InfoIcon';
 const separator = '::';
 
 class Plugin extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      address: props.address,
-      pwd: props.pwd,
-      creadOpen: props.address === '0x0000000000000000000000000000000000000000'
-    };
-
-    this.saveCredentials = this.saveCredentials.bind(this);
-  }
-
-  saveCredentials() {
-    const { address, pwd } = this.state;
-    this.props.saveCredentials(address, pwd);
-  }
-
   render() {
-    const { address, pwd, creadOpen } = this.state;
     const {
       contractList,
       selected,
@@ -54,61 +31,7 @@ class Plugin extends React.Component {
 
     return (
       <div className='container'>
-        <div className='row border-bottom pb-3'>
-          <div className='col-md-6 offset-md-3'>
-            <div className='btn btn-light btn-block text-left rounded-0 border-0'
-              style={{ cursor: 'pointer' }}
-              onClick={() => { this.setState({ creadOpen: !creadOpen }) }}>
-              Credentials
-              <div style={{ position: 'absolute', right: 24, top: 4 }}>
-                {creadOpen ? <span style={{ fontSize: 14, lineHeight: '16px', paddingRight: 6 }}>hide</span> : null}
-                <FontAwesomeIcon icon={creadOpen ? faAngleDown : faAngleRight} className='pt-1' />
-              </div>
-              <InfoIcon id='cred_info' placement='right'>
-                <div>In order to use MythX</div>
-                <div>APIs you need to have</div>
-                <div>credentials. You can use</div>
-                <div>the trial credential, but</div>
-                <div>analysis's result will be</div>
-                <div>limited. In order to get</div>
-                <div>credential you need to</div>
-                <div><a href='https://mythx.io/' target='_blank' rel='noopener noreferrer' className='text-nowrap'>sign up</a></div>
-              </InfoIcon>
-            </div>
-            <div className={creadOpen ? null : 'collapse'}>
-              <form>
-                <div className='form-group'>
-                  <label htmlFor='address'>Address</label>
-                  <input
-                    type='text'
-                    className='form-control'
-                    id='address'
-                    aria-describedby='emailHelp'
-                    placeholder='Address'
-                    onChange={(e) => this.setState({ address: e.target.value })}
-                    defaultValue={address} />
-                </div>
-                <div className='form-group'>
-                  <label htmlFor='pwd'>Password</label>
-                  <input
-                    type='password'
-                    className='form-control'
-                    id='pwd'
-                    placeholder='Password'
-                    onChange={(e) => this.setState({ pwd: e.target.value })}
-                    defaultValue={pwd} />
-                </div>
-                <button
-                  type='button'
-                  className='btn btn-primary'
-                  onClick={this.saveCredentials}>
-                  Save
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div className='row mt-3'>
+        <div className='row'>
           <div className='col-md-6 offset-md-3'>
             {
               target ?
@@ -228,7 +151,6 @@ Plugin.propTypes = {
   isAnalyzig: PropTypes.bool.isRequired,
   analyses: PropTypes.object.isRequired,
   reports: PropTypes.object.isRequired,
-  saveCredentials: PropTypes.func.isRequired,
   selectContract: PropTypes.func.isRequired,
   highlightIssue: PropTypes.func.isRequired,
   clear: PropTypes.func.isRequired,

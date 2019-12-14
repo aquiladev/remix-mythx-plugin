@@ -6,6 +6,7 @@ import keccak from 'keccakjs';
 import 'bootstrap/dist/css/bootstrap.css';
 
 import Plugin from './components/Plugin';
+import Settings from './components/Settings';
 import Footer from './components/Footer';
 import Notifier from './components/Notifier';
 import Home from './components/Home';
@@ -14,6 +15,7 @@ import utils from './lib/utils';
 
 const separator = '::';
 const storageKey = 'remix-mythx-plugin';
+const DEFAULT_ENV = 'https://api.mythx.io/v1/';
 const TRIAL_CREDS = {
   address: '0x0000000000000000000000000000000000000000',
   pwd: 'trial'
@@ -28,12 +30,13 @@ class App extends React.Component {
 
     const raw = localStorage.getItem(storageKey) || '{}';
     const appState = JSON.parse(raw);
-    const address = appState.address || TRIAL_CREDS.address;
 
     this.state = {
       pluginOpen: false,
-      address,
+      settingsOpen: false,
+      address: appState.address || TRIAL_CREDS.address,
       pwd: appState.pwd || TRIAL_CREDS.pwd,
+      env: appState.env || DEFAULT_ENV,
       jwt: null,
       compilations: {},
       selected: '',
@@ -73,7 +76,7 @@ class App extends React.Component {
 
     this.processCompilation = this.processCompilation.bind(this);
     this.login = this.login.bind(this);
-    this.saveCredentials = this.saveCredentials.bind(this);
+    this.saveSettings = this.saveSettings.bind(this);
     this.logAnalysis = this.logAnalysis.bind(this);
     this.analyze = this.analyze.bind(this);
     this.getRequestData = this.getRequestData.bind(this);
@@ -83,6 +86,8 @@ class App extends React.Component {
     this.selectContract = this.selectContract.bind(this);
     this.addAlert = this.addAlert.bind(this);
     this.dismissAlert = this.dismissAlert.bind(this);
+    this.openSettings = this.openSettings.bind(this);
+    this.closeSettings = this.closeSettings.bind(this);
   }
 
   processCompilation(target, source, data) {
@@ -117,9 +122,19 @@ class App extends React.Component {
     return Object.keys(file).map(x => `${target}${separator}${x}`);
   }
 
-  saveCredentials(address, pwd) {
-    this.setState({ address, pwd });
-    localStorage.setItem(storageKey, JSON.stringify({ address, pwd }));
+  saveSettings(address, pwd, env) {
+    address = address || TRIAL_CREDS.address;
+    pwd = pwd || TRIAL_CREDS.pwd;
+    env = env || DEFAULT_ENV;
+
+    this.setState({ address, pwd, env, jwt: null });
+    const raw = localStorage.getItem(storageKey) || '{}';
+    const state = JSON.parse(raw);
+    const newState = {
+      ...state,
+      ...{ address, pwd, env }
+    }
+    localStorage.setItem(storageKey, JSON.stringify(newState));
     this.addAlert('success', 'Saved');
   }
 
@@ -140,11 +155,11 @@ class App extends React.Component {
   }
 
   analyze = async (mode = 'quick') => {
-    const { address, pwd, compilations, selected, analyses, reports } = this.state;
+    const { address, pwd, env, compilations, selected, analyses, reports } = this.state;
     const [target] = selected.split(separator);
 
     try {
-      const mythx = new Client(address, pwd, 'remythx');
+      const mythx = new Client(address, pwd, 'remythx', env);
       const jwt = await this.login(mythx);
 
       this.setState({
@@ -318,22 +333,38 @@ class App extends React.Component {
     }
   }
 
+  openSettings() {
+    this.setState({
+      settingsOpen: true
+    });
+  }
+
+  closeSettings() {
+    this.setState({
+      settingsOpen: false
+    });
+  }
+
   render() {
-    const { pluginOpen, alerts } = this.state;
+    const { pluginOpen, alerts, settingsOpen } = this.state;
 
     const content = pluginOpen ?
       <div style={{ position: 'relative', minHeight: '100vh' }}>
         <main>
-          <Plugin {...this.state}
-            saveCredentials={this.saveCredentials}
-            selectContract={this.selectContract}
-            analyze={this.analyze}
-            addAlert={this.addAlert}
-            highlightIssue={this.highlightIssue}
-            clear={this.clear}
-            changeTab={(tab) => { this.setState({ pluginActiveTab: tab }) }} />
+          {settingsOpen ?
+            <Settings {...this.state}
+              save={this.saveSettings}
+              close={this.closeSettings} /> :
+            <Plugin {...this.state}
+              selectContract={this.selectContract}
+              analyze={this.analyze}
+              addAlert={this.addAlert}
+              highlightIssue={this.highlightIssue}
+              clear={this.clear}
+              changeTab={(tab) => { this.setState({ pluginActiveTab: tab }) }} />
+          }
         </main>
-        <Footer isPlugin />
+        <Footer isPlugin openSettings={this.openSettings} />
         <Notifier alerts={alerts} onDismiss={this.dismissAlert} />
       </div> :
       <Home />;
