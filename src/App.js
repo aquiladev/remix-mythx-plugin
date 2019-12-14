@@ -2,6 +2,7 @@ import React from 'react';
 import { createIframeClient } from '@remixproject/plugin';
 import { Client } from 'mythxjs';
 import keccak from 'keccakjs';
+import { Alert } from 'reactstrap';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -47,7 +48,8 @@ class App extends React.Component {
       reports: {},
       alerts: [],
       log: appState.log || [],
-      pluginActiveTab: 'log'
+      pluginActiveTab: 'log',
+      visibleTrialWarning: true
     };
 
     client = createIframeClient();
@@ -346,7 +348,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { pluginOpen, alerts, settingsOpen } = this.state;
+    const { pluginOpen, settingsOpen, address, visibleTrialWarning, alerts } = this.state;
 
     const content = pluginOpen ?
       <div style={{ position: 'relative', minHeight: '100vh' }}>
@@ -355,13 +357,26 @@ class App extends React.Component {
             <Settings {...this.state}
               save={this.saveSettings}
               close={this.closeSettings} /> :
-            <Plugin {...this.state}
-              selectContract={this.selectContract}
-              analyze={this.analyze}
-              addAlert={this.addAlert}
-              highlightIssue={this.highlightIssue}
-              clear={this.clear}
-              changeTab={(tab) => { this.setState({ pluginActiveTab: tab }) }} />
+            <>
+              {address === TRIAL_CREDS.address &&
+                <div className='container'>
+                  <Alert color='warning' isOpen={visibleTrialWarning}
+                    toggle={() => { this.setState({ visibleTrialWarning: false }) }}>
+                    You are now using trial credentials. Update in <button
+                      className='btn btn-link p-0'
+                      style={{ display: 'contents' }}
+                      onClick={this.openSettings}>Settings</button>
+                  </Alert>
+                </div>
+              }
+              <Plugin {...this.state}
+                selectContract={this.selectContract}
+                analyze={this.analyze}
+                addAlert={this.addAlert}
+                highlightIssue={this.highlightIssue}
+                clear={this.clear}
+                changeTab={(tab) => { this.setState({ pluginActiveTab: tab }) }} />
+            </>
           }
         </main>
         <Footer isPlugin openSettings={this.openSettings} />
