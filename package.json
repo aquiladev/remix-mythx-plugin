@@ -8,7 +8,7 @@
     "@fortawesome/react-fontawesome": "0.1.4",
     "@remixproject/plugin": "0.1.14",
     "bootstrap": "4.3.1",
-    "eslint": "6.3.0",
+    "eslint": "6.6.0",
     "keccakjs": "0.2.3",
     "lodash": "4.17.15",
     "moment": "2.24.0",
@@ -17,7 +17,7 @@
     "react-bs-notifier": "5.0.0",
     "react-copy-to-clipboard": "5.0.1",
     "react-dom": "16.8.6",
-    "react-scripts": "3.1.1",
+    "react-scripts": "3.3.0",
     "reactstrap": "8.0.0",
     "remix-lib": "0.4.12"
   },
