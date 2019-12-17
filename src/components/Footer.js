@@ -6,19 +6,35 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import packageJson from './../../package.json';
 
 function Footer({ isPlugin, openSettings }) {
-  return (
-    <div className={`position-absolute text-center w-100 pb-1${isPlugin ? '' : ' text-white'}`} style={{ fontSize: 12, bottom: 0 }}>
-      {isPlugin &&
-        <FontAwesomeIcon
-          icon={faCog}
-          size='lg'
-          className='float-left ml-2'
-          style={{ cursor: 'pointer' }}
-          onClick={openSettings} />}
+  const links = (
+    <>
       <a href={`https://github.com/aquiladev/remix-mythx-plugin/releases/tag/${packageJson.version}`} target='_block' rel='noopener noreferrer'>
         {packageJson.version}
       </a> | <a href='https://discord.gg/VhdtjCh' target='_blank' rel='noopener noreferrer'>Get support</a>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {
+        isPlugin ?
+          <div className={`position-absolute w-100 pb-1 d-flex`} style={{ fontSize: 12, bottom: 0 }}>
+            <div>
+              <button
+                className='btn btn-link ml-1 p-0'
+                style={{ fontSize: 12, color: 'initial' }}
+                onClick={openSettings}>
+                <FontAwesomeIcon icon={faCog} size='lg' className='mr-1' />
+                MythX Settings
+              </button>
+            </div>
+            <div class="ml-auto">{links}</div>
+          </div> :
+          <div className={`position-absolute text-center w-100 pb-1 text-white`} style={{ fontSize: 12, bottom: 0 }}>
+            {links}
+          </div>
+      }
+    </>
   );
 }
 
