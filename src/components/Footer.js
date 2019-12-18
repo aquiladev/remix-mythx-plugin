@@ -28,7 +28,7 @@ function Footer({ isPlugin, openSettings }) {
                 MythX Settings
               </button>
             </div>
-            <div class="ml-auto">{links}</div>
+            <div className='ml-auto'>{links}</div>
           </div> :
           <div className={`position-absolute text-center w-100 pb-1 text-white`} style={{ fontSize: 12, bottom: 0 }}>
             {links}
