@@ -157,17 +157,17 @@ class App extends React.Component {
   }
 
   analyze = async (mode = 'quick') => {
-    const { address, pwd, env, compilations, selected, analyses, reports } = this.state;
+    const { address, pwd, jwt, env, compilations, selected, analyses, reports } = this.state;
     const [target] = selected.split(separator);
 
     try {
-      const mythx = new Client(address, pwd, 'remythx', env);
-      const jwt = await this.login(mythx);
+      const mythx = new Client(address, pwd, 'remythx', env, jwt);
+      const accessToken = await this.login(mythx);
 
       this.setState({
         analyses: { ...analyses, [selected]: null },
         isAnalyzig: true,
-        jwt
+        jwt: accessToken
       });
       await client.call('editor', 'discardHighlight');
 
@@ -210,21 +210,11 @@ class App extends React.Component {
     }
   }
 
-  login(client) {
-    let jwt = this.state.jwt;
-
-    if (jwt) {
-      try {
-        client.loginWithToken(jwt);
-        return jwt;
-      } catch (err) {
-        if (err.message !== token_invalid_msg) {
-          throw err;
-        }
-      }
+  async login(client) {
+    if (!Client.jwtTokens.access) {
+      await client.login();
     }
-
-    return client.login();
+    return Client.jwtTokens.access;
   }
 
   getRequestData(mode) {
