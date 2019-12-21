@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
-function Settings({
+function Settings ({
   address: inAddress,
   pwd: inPwd,
   env: inEnv,
   save: saveSettings,
-  close }) {
-
-  const [address, setAddress] = useState(inAddress);
-  const [pwd, setPwd] = useState(inPwd);
-  const [env, setEnv] = useState(inEnv);
+  close
+}) {
+  const [address, setAddress] = useState(inAddress)
+  const [pwd, setPwd] = useState(inPwd)
+  const [env, setEnv] = useState(inEnv)
 
   const save = () => {
-    saveSettings(address, pwd, env);
+    saveSettings(address, pwd, env)
   }
 
   return (
@@ -36,7 +36,7 @@ function Settings({
           <div className='text-left'>
             <h5>Credentials</h5>
             <div className='text-secondary' style={{ fontSize: 13 }}>
-              You need to sign in to use MythX APIs. 
+              You need to sign in to use MythX APIs.
               Trial creds are available for a limited analysis.
               To get full report <a href='https://mythx.io/' target='_blank' rel='noopener noreferrer' className='text-nowrap'>sign up</a></div>
           </div>
@@ -96,6 +96,6 @@ function Settings({
 Settings.propTypes = {
   save: PropTypes.func.isRequired,
   close: PropTypes.func.isRequired
-};
+}
 
-export default Settings;
+export default Settings

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard, faTrash } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faClipboard, faTrash } from '@fortawesome/free-solid-svg-icons'
 import {
   Nav,
   NavItem,
@@ -13,16 +13,16 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem
-} from 'reactstrap';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+} from 'reactstrap'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 
-import Report from './Report';
-import Log from './Log';
-import InfoIcon from './InfoIcon';
+import Report from './Report'
+import Log from './Log'
+import InfoIcon from './InfoIcon'
 
-const separator = '::';
+const separator = '::'
 
-function Plugin({
+function Plugin ({
   contractList,
   selected,
   isAnalyzig,
@@ -37,16 +37,16 @@ function Plugin({
   changeTab,
   log
 }) {
-  const [isAnalyzeDropdownOpen, setIsAnalyzeDropdownOpen] = useState(false);
-  const [target] = selected.split(separator);
+  const [isAnalyzeDropdownOpen, setIsAnalyzeDropdownOpen] = useState(false)
+  const [target] = selected.split(separator)
 
   return (
     <div className='container'>
       <div className='row'>
         <div className='col-md-6 offset-md-3'>
           {
-            target ?
-              <>
+            target
+              ? <>
                 <div className='d-flex pb-3'>
                   <div className='w-100'>
                     <select
@@ -82,9 +82,9 @@ function Plugin({
                         onClick={() => analyze()}
                         disabled={isAnalyzig}>
                         {
-                          isAnalyzig ?
-                            <span className='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> :
-                            <div>Analyze</div>
+                          isAnalyzig
+                            ? <span className='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>
+                            : <div>Analyze</div>
                         }
                       </button>
                       <DropdownToggle caret disabled={isAnalyzig} className='btn-primary' />
@@ -106,8 +106,8 @@ function Plugin({
                     </div>
                   }
                 </div>
-              </> :
-              <div className='alert alert-warning w-100' role='alert'>
+              </>
+              : <div className='alert alert-warning w-100' role='alert'>
                 You need to compile your contract first!
               </div>
           }
@@ -154,7 +154,7 @@ function Plugin({
         </TabPane>
       </TabContent>
     </div>
-  );
+  )
 }
 
 Plugin.propTypes = {
@@ -167,7 +167,7 @@ Plugin.propTypes = {
   selectContract: PropTypes.func.isRequired,
   highlightIssue: PropTypes.func.isRequired,
   clear: PropTypes.func.isRequired,
-  changeTab: PropTypes.func.isRequired,
-};
+  changeTab: PropTypes.func.isRequired
+}
 
-export default Plugin;
+export default Plugin

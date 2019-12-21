@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import Issue from './Issue';
+import Issue from './Issue'
 
-function Report({ report, highlightIssue }) {
+function Report ({ report, highlightIssue }) {
   return (
     <>
       {
@@ -22,10 +22,10 @@ function Report({ report, highlightIssue }) {
           <div className='col-md-6 offset-md-3'>
             {
               report.list.map((x, i) => {
-                const issueCount = x.errorCount + x.warningCount;
+                const issueCount = x.errorCount + x.warningCount
                 const summary = (amount, caption) => {
-                  return `${amount} ${amount === 1 ? caption : `${caption}s`}`;
-                };
+                  return `${amount} ${amount === 1 ? caption : `${caption}s`}`
+                }
                 return (
                   <div key={i} className='border-bottom pt-2 pb-2'>
                     <div className='text-truncate font-weight-bold'>{x.filePath}</div>
@@ -39,19 +39,19 @@ function Report({ report, highlightIssue }) {
                       </div>
                     }
                   </div>
-                );
+                )
               })
             }
           </div>
         </div>
       }
     </>
-  );
+  )
 }
 
 Report.propTypes = {
   report: PropTypes.object.isRequired,
   highlightIssue: PropTypes.func.isRequired
-};
+}
 
-export default Report;
+export default Report

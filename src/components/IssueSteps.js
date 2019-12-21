@@ -1,17 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const KnownAddressMap = {
   '0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe': 'Creator',
   '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef': 'Attacker'
 }
 
-function IssueSteps({ issue }) {
-  const { extra = {} } = issue;
-  const { testCases = [] } = extra;
+function IssueSteps ({ issue }) {
+  const { extra = {} } = issue
+  const { testCases = [] } = extra
 
   if (!testCases.length) {
-    return null;
+    return null
   }
 
   return (
@@ -22,7 +22,7 @@ function IssueSteps({ issue }) {
           return (
             <div key={i} className=''>
               {tc.steps.map((s, j) => {
-                const knownAddress = KnownAddressMap[s.origin];
+                const knownAddress = KnownAddressMap[s.origin]
                 return (
                   <div key={j} className='pt-2'>
                     <h6 className='font-weight-bold'>{`Transaction ${j + 1} ${j === 0 ? '(contract creation)' : ''}`}</h6>
@@ -44,7 +44,7 @@ function IssueSteps({ issue }) {
                       </div>
                     </div>
                   </div>
-                );
+                )
               })}
               <hr />
             </div>
@@ -52,11 +52,11 @@ function IssueSteps({ issue }) {
         })
       }
     </div>
-  );
+  )
 }
 
 IssueSteps.propTypes = {
   issue: PropTypes.object.isRequired
-};
+}
 
-export default IssueSteps;
+export default IssueSteps

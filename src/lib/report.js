@@ -1,13 +1,13 @@
-import SourceMappingDecoder from 'remix-lib/src/sourceMappingDecoder';
+import SourceMappingDecoder from 'remix-lib/src/sourceMappingDecoder'
 
-import { isFatal, getUniqueIssues } from './eslint';
+import { isFatal, getUniqueIssues } from './eslint'
 
 const mythx2Severity = {
   High: 2,
-  Medium: 1,
-};
+  Medium: 1
+}
 
-const decoder = new SourceMappingDecoder();
+const decoder = new SourceMappingDecoder()
 
 /**
  * Turn a srcmap entry (the thing between semicolons) into a line and
@@ -20,14 +20,14 @@ const decoder = new SourceMappingDecoder();
  * @returns {line: number, column: number}
  */
 const textSrcEntry2lineColumn = (srcEntry, lineBreakPositions) => {
-  const ary = srcEntry.split(':');
+  const ary = srcEntry.split(':')
   const sourceLocation = {
     length: parseInt(ary[1], 10),
-    start: parseInt(ary[0], 10),
-  };
-  const loc = decoder.convertOffsetToLineColumn(sourceLocation, lineBreakPositions);
-  return [loc.start, loc.end];
-};
+    start: parseInt(ary[0], 10)
+  }
+  const loc = decoder.convertOffsetToLineColumn(sourceLocation, lineBreakPositions)
+  return [loc.start, loc.end]
+}
 
 /**
  * Convert a MythX issue into an ESLint-style issue.
@@ -58,12 +58,12 @@ const textSrcEntry2lineColumn = (srcEntry, lineBreakPositions) => {
  * @returns eslint-issue object
  */
 const issue2EsLint = (issue, source, locations) => {
-  let swcLink;
+  let swcLink
 
   if (!issue.swcID) {
-    swcLink = 'N/A';
+    swcLink = 'N/A'
   } else {
-    swcLink = 'https://swcregistry.io/docs/' + issue.swcID;
+    swcLink = 'https://swcregistry.io/docs/' + issue.swcID
   }
 
   const esIssue = {
@@ -79,46 +79,45 @@ const issue2EsLint = (issue, source, locations) => {
     endCol: 0,
     sourceType: '',
     origin: issue
-  };
+  }
 
   if (source) {
-    let startLineCol, endLineCol;
-    const lineBreakPositions = decoder.getLinebreakPositions(source);
+    let startLineCol, endLineCol
+    const lineBreakPositions = decoder.getLinebreakPositions(source)
 
     if (locations.length) {
       const srcEntry = locations[0].sourceMap.split(';')[0];
-      [startLineCol, endLineCol] = textSrcEntry2lineColumn(srcEntry, lineBreakPositions);
-      esIssue.sourceType = locations[0].sourceType;
+      [startLineCol, endLineCol] = textSrcEntry2lineColumn(srcEntry, lineBreakPositions)
+      esIssue.sourceType = locations[0].sourceType
     }
 
     if (startLineCol) {
-      esIssue.line = startLineCol.line;
-      esIssue.column = startLineCol.column;
-      esIssue.endLine = endLineCol.line;
-      esIssue.endCol = endLineCol.column;
+      esIssue.line = startLineCol.line
+      esIssue.column = startLineCol.column
+      esIssue.endLine = endLineCol.line
+      esIssue.endCol = endLineCol.column
     }
   }
 
-  return esIssue;
-};
+  return esIssue
+}
 
 /**
  * Gets the source index from the issue sourcemap
- * 
+ *
  * @param {object[]} locations - array of text-only MythX API issue locations
  * @returns {number}
  */
 const getSourceIndex = locations => {
   if (locations.length) {
-    const sourceMapRegex = /(\d+):(\d+):(\d+)/g;
-    const match = sourceMapRegex.exec(locations[0].sourceMap);
+    const sourceMapRegex = /(\d+):(\d+):(\d+)/g
+    const match = sourceMapRegex.exec(locations[0].sourceMap)
     // Ignore `-1` source index for compiler generated code
-    return match ? match[3] : 0;
+    return match ? match[3] : 0
   }
 
-  return 0;
-};
-
+  return 0
+}
 
 /**
  * Converts MythX analyze API output item to Eslint compatible object
@@ -127,34 +126,33 @@ const getSourceIndex = locations => {
  * @returns {object}
  */
 const convertMythXReport2EsIssue = (report, mapping, data) => {
-  const { issues } = report;
-  const { sources, functionHashes } = data;
-  const results = {};
+  const { issues } = report
+  const { sources, functionHashes } = data
+  const results = {}
 
   const textLocationFilterFn = location => (
-    (location.sourceType === 'solidity-file')
-    &&
+    (location.sourceType === 'solidity-file') &&
     (location.sourceFormat === 'text')
-  );
+  )
 
   // eslint-disable-next-line array-callback-return
   issues.map(issue => {
-    const locations = issue.locations.filter(textLocationFilterFn);
-    const location = locations.length ? locations[0] : undefined;
+    const locations = issue.locations.filter(textLocationFilterFn)
+    const location = locations.length ? locations[0] : undefined
 
-    let sourceCode = '';
-    let filePath = '<unknown>';
+    let sourceCode = ''
+    let filePath = '<unknown>'
 
     if (location) {
-      const sourceList = location.sourceList || report.sourceList || [];
-      const sourceIndex = getSourceIndex(location);
-      const fileName = sourceList[sourceIndex];
+      const sourceList = location.sourceList || report.sourceList || []
+      const sourceIndex = getSourceIndex(location)
+      const fileName = sourceList[sourceIndex]
 
       if (fileName) {
-        filePath = mapping[fileName] || fileName;
+        filePath = mapping[fileName] || fileName
 
         if (sources[filePath]) {
-          sourceCode = sources[filePath].content;
+          sourceCode = sources[filePath].content
         }
       }
     }
@@ -168,37 +166,36 @@ const convertMythXReport2EsIssue = (report, mapping, data) => {
         filePath,
         functionHashes,
         sourceCode,
-        messages: [],
-      };
+        messages: []
+      }
     }
 
-    let message = issue2EsLint(issue, (sources[filePath] || {}).content, locations);
-    results[filePath].messages.push(message);
-  });
+    const message = issue2EsLint(issue, (sources[filePath] || {}).content, locations)
+    results[filePath].messages.push(message)
+  })
 
-  // eslint-disable-next-line no-unused-vars
-  for (let k in results) {
-    if (results.hasOwnProperty(k)) {
+  for (const k in results) {
+    if (Object.prototype.hasOwnProperty.call(results, k)) {
       results[k].warningCount = results[k].messages.reduce((acc, { fatal, severity }) =>
-        !isFatal(fatal, severity) ? acc + 1 : acc, 0);
+        !isFatal(fatal, severity) ? acc + 1 : acc, 0)
 
       results[k].errorCount = results[k].messages.reduce((acc, { fatal, severity }) =>
-        isFatal(fatal, severity) ? acc + 1 : acc, 0);
+        isFatal(fatal, severity) ? acc + 1 : acc, 0)
     }
   }
 
-  return Object.values(results);
-};
+  return Object.values(results)
+}
 
 export const formatIssues = (data, mapping, issues) => {
-  const results = {};
+  const results = {}
   issues.forEach(report => {
     convertMythXReport2EsIssue(report, mapping, data)
       .forEach(issue => {
-        const result = results[issue.filePath];
+        const result = results[issue.filePath]
         if (!result) {
-          results[issue.filePath] = issue;
-          return;
+          results[issue.filePath] = issue
+          return
         }
 
         results[issue.filePath] = {
@@ -207,12 +204,12 @@ export const formatIssues = (data, mapping, issues) => {
           fixableErrorCount: result.fixableErrorCount + issue.fixableErrorCount,
           fixableWarningCount: result.fixableWarningCount + issue.fixableWarningCount,
           filePath: result.filePath,
-          messages: [...result.messages, ...issue.messages],
-        };
-      });
-  });
+          messages: [...result.messages, ...issue.messages]
+        }
+      })
+  })
 
   const eslintIssues = Object.values(results)
-    .reduce((acc, curr) => acc.concat(curr), []);
-  return getUniqueIssues(eslintIssues);
-};
+    .reduce((acc, curr) => acc.concat(curr), [])
+  return getUniqueIssues(eslintIssues)
+}

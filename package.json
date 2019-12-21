@@ -8,7 +8,6 @@
     "@fortawesome/react-fontawesome": "0.1.4",
     "@remixproject/plugin": "0.1.14",
     "bootstrap": "4.3.1",
-    "eslint": "6.6.0",
     "keccakjs": "0.2.3",
     "lodash": "4.17.15",
     "moment": "2.24.0",
@@ -22,6 +21,13 @@
     "remix-lib": "0.4.12"
   },
   "devDependencies": {
+    "eslint": "6.6.0",
+    "eslint-config-standard": "14.1.0",
+    "eslint-plugin-import": "2.19.1",
+    "eslint-plugin-node": "10.0.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
+    "husky": "3.1.0",
     "release-it": "12.3.6"
   },
   "scripts": {
@@ -29,6 +35,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint --max-warnings 0 **/*.js",
     "release": "release-it --no-npm.publish --github.release"
   },
   "eslintConfig": {
@@ -45,5 +52,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   }
 }

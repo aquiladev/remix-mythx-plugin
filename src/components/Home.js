@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
-import Footer from './Footer';
-import remixLogo from './../images/remix.svg';
-import mythxLogo from './../images/mythx.png';
-import plus from './../images/plus.svg';
+import Footer from './Footer'
+import remixLogo from './../images/remix.svg'
+import mythxLogo from './../images/mythx.png'
+import plus from './../images/plus.svg'
 
-function Home() {
+function Home () {
   return (
     <>
       <div className='h-100'
@@ -28,7 +28,7 @@ function Home() {
       </div>
       <Footer />
     </>
-  );
+  )
 }
 
 export default Home
