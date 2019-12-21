@@ -21,7 +21,6 @@ const TRIAL_CREDS = {
   address: '0x0000000000000000000000000000000000000000',
   pwd: 'trial'
 };
-const token_invalid_msg = 'Access token has expired or is invalid! Please login again.';
 
 let client = {};
 
