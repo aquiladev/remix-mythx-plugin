@@ -13,10 +13,10 @@ function Log({ list = [] }) {
             const link = `https://dashboard.mythx.io/#/console/analyses/${x.uuid}`;
             return (
               <div key={i} className='col-md-6 offset-md-3 pt-1 pb-1'>
-                <span className='pr-2 text-secondary'>[{moment(x.timestamp).format('L LTS')}]</span>
+                <span className='pr-1 text-secondary'>[{moment(x.timestamp).format('L LTS')}]</span>
                 {x.mode === 'full' ?
                   <>
-                    <FontAwesomeIcon icon={faClock} className='mr-2' />
+                    <FontAwesomeIcon icon={faClock} className='mr-1 text-warning' />
                     Request for <b>{x.mode}</b> analysis has been submitted. See your results shortly at
                   </> :
                   <>Your <b>{x.mode}</b> analysis is completed. See your results at</>
