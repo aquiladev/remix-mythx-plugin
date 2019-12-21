@@ -166,6 +166,14 @@ class App extends React.Component {
 
       this.setState({
         analyses: { ...analyses, [selected]: null },
+        reports: {
+          ...reports,
+          [selected]: {
+            list: [{
+              messages: []
+            }]
+          }
+        },
         isAnalyzig: true,
         jwt: accessToken
       });

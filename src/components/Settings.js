@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-import InfoIcon from './InfoIcon';
-
 function Settings({
   address: inAddress,
   pwd: inPwd,
@@ -36,19 +34,11 @@ function Settings({
       <div className='row pb-3'>
         <div className='col-md-6 offset-md-3'>
           <div className='text-left'>
-            <h5>
-              Credentials
-              <InfoIcon id='cred_info' placement='right'>
-                <div>In order to use MythX</div>
-                <div>APIs you need to have</div>
-                <div>credentials. You can use</div>
-                <div>the trial credential, but</div>
-                <div>analysis's result will be</div>
-                <div>limited. In order to get</div>
-                <div>credential you need to</div>
-                <div><a href='https://mythx.io/' target='_blank' rel='noopener noreferrer' className='text-nowrap'>sign up</a></div>
-              </InfoIcon>
-            </h5>
+            <h5>Credentials</h5>
+            <div className='text-secondary' style={{ fontSize: 13 }}>
+              You need to sign in to use MythX APIs. 
+              Trial creds are available for a limited analysis.
+              To get full report <a href='https://mythx.io/' target='_blank' rel='noopener noreferrer' className='text-nowrap'>sign up</a></div>
           </div>
           <div>
             <div className='form-group'>
