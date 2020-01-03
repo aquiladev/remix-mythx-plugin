@@ -49,3 +49,18 @@ When the report is received you will see a list of issues. You can click on an i
     **Solution:**
 
     Set `Cookies` setting to `Allow all cookies` on `chrome://settings/shields` page
+
+# Deployment
+## Install
+
+- Fork & clone https://github.com/ethereum/remix-plugins-directory.git
+- `cd tools/ipfs-upload`
+- `npm install`
+
+## When you want to update
+
+- `node tools/ipfs-upload/bin/upload-remix-plugin <path-to-react-build-folder>` : Upload to IPFS
+  **(Copy the Hash provided)**
+- Update version & url of your profile under `/plugins/mythx/profile.json`
+- Push (should trigger a Github Action that take the new value and update the `build/profile.json`
+- Create a Pull Request and we approve it.
