@@ -12,11 +12,9 @@ In order to start using the plugin you need to activate it in plugin manager.
 The plugin has dependency `Solidity Compiler` plugin, you need to activate in also.
 
 ## Credentials
-After plugin activation you may open the plugin.
+![Plugin settings](assets/plugin_usage.png?raw=true "Plugin settings")
 
-![Plugin usage](assets/plugin_usage.png?raw=true "Plugin usage")
-
-You can see a block with credentials on top of the left side panel. Those will be used for execution security analysis via MythX.
+You need to open the plugin and click on 'MythX Settings' button on the bottom of the plugin. There is a block with credentials on top of the plugin's Settings page. Those will be used for execution security analysis via MythX.
 There are trial credentials by default. You can use those credentials to analyze your contracts, but the report will be restricted.
 
 You can create own account on [mythx.io](https://mythx.io/)
