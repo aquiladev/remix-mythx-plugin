@@ -16,6 +16,7 @@ import utils from './lib/utils'
 
 const separator = '::'
 const storageKey = 'remix-mythx-plugin'
+const TOOL_NAME = 'remythx'
 const DEFAULT_ENV = 'https://api.mythx.io/v1/'
 const TRIAL_CREDS = {
   address: '0x0000000000000000000000000000000000000000',
@@ -157,11 +158,11 @@ class App extends React.Component {
   }
 
   analyze = async (mode = 'quick') => {
-    const { address, pwd, jwt, env, compilations, selected, analyses, reports } = this.state
+    const { compilations, selected, analyses, reports } = this.state
     const [target] = selected.split(separator)
 
     try {
-      const mythx = new Client(address, pwd, 'remythx', env, jwt)
+      const mythx = this.createClient()
       const accessToken = await this.login(mythx)
 
       this.setState({
@@ -215,6 +216,17 @@ class App extends React.Component {
         isAnalyzig: false,
         pluginActiveTab: 'report'
       })
+    }
+  }
+
+  createClient () {
+    const { address, pwd, jwt, env } = this.state
+
+    try {
+      return new Client(address, pwd, TOOL_NAME, env, jwt)
+    } catch (err) {
+      console.error(err)
+      return new Client(address, pwd, TOOL_NAME, env)
     }
   }
 
