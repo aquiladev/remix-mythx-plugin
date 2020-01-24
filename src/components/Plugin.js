@@ -91,6 +91,7 @@ function Plugin ({
                       <DropdownMenu>
                         <DropdownItem onClick={() => analyze()} disabled={isAnalyzig}>Analyze</DropdownItem>
                         <DropdownItem onClick={() => analyze('full')} disabled={isAnalyzig}>Analyze (Full mode)</DropdownItem>
+                        <DropdownItem onClick={() => analyze('deep')} disabled={isAnalyzig}>Analyze (Deep)</DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown>
                   </ButtonGroup>
