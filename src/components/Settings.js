@@ -42,7 +42,7 @@ function Settings ({
           </div>
           <div>
             <div className='form-group'>
-              <label htmlFor='address'>Address</label>
+              <label htmlFor='address'>Address/Email</label>
               <input
                 type='text'
                 className='form-control'

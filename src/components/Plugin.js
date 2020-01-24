@@ -90,14 +90,14 @@ function Plugin ({
                       <DropdownToggle caret disabled={isAnalyzig} className='btn-primary' />
                       <DropdownMenu>
                         <DropdownItem onClick={() => analyze()} disabled={isAnalyzig}>Analyze</DropdownItem>
-                        <DropdownItem onClick={() => analyze('full')} disabled={isAnalyzig}>Analyze (Full mode)</DropdownItem>
+                        <DropdownItem onClick={() => analyze('standard')} disabled={isAnalyzig}>Analyze (Standard)</DropdownItem>
                         <DropdownItem onClick={() => analyze('deep')} disabled={isAnalyzig}>Analyze (Deep)</DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown>
                   </ButtonGroup>
                   <InfoIcon id='analysis_info' placement='bottom'>
                     <div>Analysis can take couple</div>
-                    <div>of minutes. The <b>Full mode</b></div>
+                    <div>of minutes. The <b>Deep</b></div>
                     <div>takes approx 30 minutes.</div>
                   </InfoIcon>
                   {
