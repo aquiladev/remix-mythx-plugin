@@ -97,8 +97,9 @@ function Plugin ({
                   </ButtonGroup>
                   <InfoIcon id='analysis_info' placement='bottom'>
                     <div>Analysis can take couple</div>
-                    <div>of minutes. The <b>Deep</b></div>
-                    <div>takes approx 30 minutes.</div>
+                    <div>of minutes. <b>Standard</b> mode</div>
+                    <div>takes approx 25 minutes.</div>
+                    <div><b>Deep</b> takes approx 70 minutes.</div>
                   </InfoIcon>
                   {
                     isAnalyzig &&
