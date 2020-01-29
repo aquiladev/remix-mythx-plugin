@@ -75,7 +75,7 @@ function Settings ({
               <input
                 type='text'
                 className='form-control'
-                id='address'
+                id='endpoint'
                 placeholder='Endpoint'
                 onChange={(e) => setEnv(e.target.value)}
                 defaultValue={env} />
