@@ -15,7 +15,7 @@ function Issue ({ issue, highlightIssue }) {
       <div>
         {
           issue.error
-            ? <div className='alert alert-danger p-1'>
+            ? <div className='alert alert-danger p-1' style={{ padding: '.5rem' }}>
               {issue.error}
             </div>
             : <>

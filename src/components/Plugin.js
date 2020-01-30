@@ -109,7 +109,7 @@ function Plugin ({
                   }
                 </div>
               </>
-              : <div className='alert alert-warning w-100' role='alert'>
+              : <div className='alert alert-warning w-100' role='alert' style={{ padding: '.5rem' }}>
                 You need to compile your contract first!
               </div>
           }

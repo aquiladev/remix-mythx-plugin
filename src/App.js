@@ -37,6 +37,7 @@ class App extends React.Component {
       settingsOpen: false,
       address: appState.address || TRIAL_CREDS.address,
       pwd: appState.pwd || TRIAL_CREDS.pwd,
+      token: appState.token,
       env: appState.env || DEFAULT_ENV,
       jwt: null,
       compilations: {},
@@ -125,17 +126,17 @@ class App extends React.Component {
     return Object.keys(file).map(x => `${target}${separator}${x}`)
   }
 
-  saveSettings (address, pwd, env) {
+  saveSettings (address, pwd, token, env) {
     address = address || TRIAL_CREDS.address
     pwd = pwd || TRIAL_CREDS.pwd
     env = env || DEFAULT_ENV
 
-    this.setState({ address, pwd, env, jwt: null })
+    this.setState({ address, pwd, token, env, jwt: null })
     const raw = localStorage.getItem(storageKey) || '{}'
     const state = JSON.parse(raw)
     const newState = {
       ...state,
-      ...{ address, pwd, env }
+      ...{ address, pwd, token, env }
     }
     localStorage.setItem(storageKey, JSON.stringify(newState))
     this.addAlert('success', 'Saved')
@@ -220,10 +221,10 @@ class App extends React.Component {
   }
 
   createClient () {
-    const { address, pwd, jwt, env } = this.state
+    const { address, pwd, token, jwt, env } = this.state
 
     try {
-      return new Client(address, pwd, TOOL_NAME, env, jwt)
+      return new Client(address, pwd, TOOL_NAME, env, token || jwt)
     } catch (err) {
       console.error(err)
       return new Client(address, pwd, TOOL_NAME, env)
@@ -357,7 +358,7 @@ class App extends React.Component {
   }
 
   render () {
-    const { pluginOpen, settingsOpen, address, visibleTrialWarning, alerts } = this.state
+    const { pluginOpen, settingsOpen, address, token, visibleTrialWarning, alerts } = this.state
 
     const content = pluginOpen
       ? <div style={{ position: 'relative', minHeight: '100vh' }}>
@@ -367,10 +368,11 @@ class App extends React.Component {
               save={this.saveSettings}
               close={this.closeSettings} />
             : <>
-              {address === TRIAL_CREDS.address &&
+              {address === TRIAL_CREDS.address && !token &&
                 <div className='container'>
                   <Alert color='warning' isOpen={visibleTrialWarning}
-                    toggle={() => { this.setState({ visibleTrialWarning: false }) }}>
+                    toggle={() => { this.setState({ visibleTrialWarning: false }) }}
+                    style={{ padding: '.5rem 2.9rem .5rem .5rem' }}>
                     You are now using trial credentials. Update in <button
                       className='btn btn-link p-0'
                       style={{ display: 'contents' }}
