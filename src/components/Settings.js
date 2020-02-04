@@ -14,7 +14,7 @@ function Settings ({
   close
 }) {
   const [state, setState] = useState({
-    activeTab: inToken ? '2' : '1',
+    activeTab: '2',
     address: inAddress,
     pwd: inPwd,
     token: inToken,
@@ -58,15 +58,6 @@ function Settings ({
           <Nav tabs style={{ marginTop: '.5rem' }}>
             <NavItem>
               <NavLink
-                className={classnames({ active: state.activeTab === '1' })}
-                style={{ padding: '.5rem 1rem', cursor: 'pointer' }}
-                onClick={() => { toggle('1') }}
-              >
-                Credentials
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
                 className={classnames({ active: state.activeTab === '2' })}
                 style={{ padding: '.5rem 1rem', cursor: 'pointer' }}
                 onClick={() => { toggle('2') }}
@@ -74,9 +65,30 @@ function Settings ({
                 Access Token
               </NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: state.activeTab === '1' })}
+                style={{ padding: '.5rem 1rem', cursor: 'pointer' }}
+                onClick={() => { toggle('1') }}
+              >
+                Credentials
+              </NavLink>
+            </NavItem>
           </Nav>
           <TabContent activeTab={state.activeTab}
             style={{ padding: '.5rem .5rem 0 .5rem', border: '1px solid #ecf0f1', borderTop: 'none' }}>
+            <TabPane tabId='2'>
+              <div className='form-group'>
+                <label htmlFor='token'>JWT</label>
+                <input
+                  type='text'
+                  className='form-control'
+                  id='token'
+                  placeholder='Token'
+                  onChange={(e) => setState({ ...state, token: e.target.value })}
+                  defaultValue={state.token} />
+              </div>
+            </TabPane>
             <TabPane tabId='1'>
               <div className='form-group'>
                 <label htmlFor='address'>Address/Email</label>
@@ -97,18 +109,6 @@ function Settings ({
                   placeholder='Password'
                   onChange={(e) => setState({ ...state, pwd: e.target.value })}
                   defaultValue={state.pwd} />
-              </div>
-            </TabPane>
-            <TabPane tabId='2'>
-              <div className='form-group'>
-                <label htmlFor='token'>JWT</label>
-                <input
-                  type='text'
-                  className='form-control'
-                  id='token'
-                  placeholder='Token'
-                  onChange={(e) => setState({ ...state, token: e.target.value })}
-                  defaultValue={state.token} />
               </div>
             </TabPane>
           </TabContent>
