@@ -12,7 +12,8 @@ import {
   ButtonDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Alert
 } from 'reactstrap'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
@@ -23,9 +24,10 @@ import InfoIcon from './InfoIcon'
 const separator = '::'
 
 function Plugin ({
+  compilations,
   contractList,
   selected,
-  isAnalyzig,
+  isAnalyzing,
   analyses,
   reports,
   selectContract,
@@ -40,6 +42,24 @@ function Plugin ({
   const [isAnalyzeDropdownOpen, setIsAnalyzeDropdownOpen] = useState(false)
   const [target] = selected.split(separator)
 
+  const isAnalyzeAllowed = (() => {
+    const [, contract] = selected.split(separator)
+
+    if (!compilations[target]) {
+      return false
+    }
+
+    const { data = {} } = compilations[target]
+    const { contracts = [] } = data
+
+    const file = contracts[target]
+    const { bytecode } = file[contract].evm
+
+    return bytecode && bytecode.object && bytecode.object.length
+  })()
+
+  const isAnalyzeDisabled = isAnalyzing || !isAnalyzeAllowed
+
   return (
     <div className='container'>
       <div className='row'>
@@ -53,7 +73,7 @@ function Plugin ({
                       className='form-control'
                       value={selected}
                       onChange={(e) => selectContract(e.target.value)}
-                      disabled={isAnalyzig}
+                      disabled={isAnalyzing}
                     >
                       {contractList.map((x, i) =>
                         <option key={i} value={x}>{x}</option>
@@ -66,11 +86,17 @@ function Plugin ({
                       className='form-control btn ml-2'
                       title='Clear'
                       onClick={clear}
-                      disabled={isAnalyzig}>
+                      disabled={isAnalyzing}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </div>
                 </div>
+                {
+                  !isAnalyzeAllowed &&
+                  <Alert color='warning' style={{ padding: '.5rem 2.9rem .5rem .5rem' }}>
+                    This contract is abstract, it is not possible to analyze.
+                  </Alert>
+                }
                 <div>
                   <ButtonGroup>
                     <ButtonDropdown
@@ -80,18 +106,18 @@ function Plugin ({
                         type='button'
                         className='btn btn-primary'
                         onClick={() => analyze()}
-                        disabled={isAnalyzig}>
+                        disabled={isAnalyzeDisabled}>
                         {
-                          isAnalyzig
+                          isAnalyzing
                             ? <span className='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>
                             : <div>Analyze</div>
                         }
                       </button>
-                      <DropdownToggle caret disabled={isAnalyzig} className='btn-primary' />
+                      <DropdownToggle caret disabled={isAnalyzeDisabled} className='btn-primary' />
                       <DropdownMenu>
-                        <DropdownItem onClick={() => analyze()} disabled={isAnalyzig}>Analyze</DropdownItem>
-                        <DropdownItem onClick={() => analyze('standard')} disabled={isAnalyzig}>Analyze (Standard)</DropdownItem>
-                        <DropdownItem onClick={() => analyze('deep')} disabled={isAnalyzig}>Analyze (Deep)</DropdownItem>
+                        <DropdownItem onClick={() => analyze()} disabled={isAnalyzeDisabled}>Analyze</DropdownItem>
+                        <DropdownItem onClick={() => analyze('standard')} disabled={isAnalyzeDisabled}>Analyze (Standard)</DropdownItem>
+                        <DropdownItem onClick={() => analyze('deep')} disabled={isAnalyzeDisabled}>Analyze (Deep)</DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown>
                   </ButtonGroup>
@@ -102,7 +128,7 @@ function Plugin ({
                     <div><b>Deep</b> takes approx 70 minutes.</div>
                   </InfoIcon>
                   {
-                    isAnalyzig &&
+                    isAnalyzing &&
                     <div style={{ fontSize: 14, fontWeight: 'bold' }}>
                       We are analyzing your contract. This should take up to 2 minutes
                     </div>
@@ -163,7 +189,7 @@ Plugin.propTypes = {
   addAlert: PropTypes.func.isRequired,
   contractList: PropTypes.array.isRequired,
   selected: PropTypes.string.isRequired,
-  isAnalyzig: PropTypes.bool.isRequired,
+  isAnalyzing: PropTypes.bool.isRequired,
   analyses: PropTypes.object.isRequired,
   reports: PropTypes.object.isRequired,
   selectContract: PropTypes.func.isRequired,

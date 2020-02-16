@@ -44,7 +44,7 @@ class App extends React.Component {
       selected: '',
       contractList: [],
       mapping: {},
-      isAnalyzig: false,
+      isAnalyzing: false,
       analyses: {},
       reports: {},
       alerts: [],
@@ -176,7 +176,7 @@ class App extends React.Component {
             }]
           }
         },
-        isAnalyzig: true,
+        isAnalyzing: true,
         jwt: accessToken
       })
       await client.call('editor', 'discardHighlight')
@@ -190,14 +190,14 @@ class App extends React.Component {
 
         this.setState({
           analyses: { ...analyses, [selected]: issues },
-          isAnalyzig: false,
+          isAnalyzing: false,
           pluginActiveTab: 'report'
         })
 
         this.handleResult(compilations[target].source, issues)
       } else {
         this.setState({
-          isAnalyzig: false,
+          isAnalyzing: false,
           pluginActiveTab: 'log'
         })
       }
@@ -214,7 +214,7 @@ class App extends React.Component {
             }]
           }
         },
-        isAnalyzig: false,
+        isAnalyzing: false,
         pluginActiveTab: 'report'
       })
     }
@@ -320,8 +320,8 @@ class App extends React.Component {
     })
   }
 
-  selectContract (contract) {
-    this.setState({ selected: contract })
+  selectContract (selected) {
+    this.setState({ selected })
   }
 
   addAlert (type, text) {
