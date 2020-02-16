@@ -14,7 +14,7 @@ import Home from './components/Home'
 import { formatIssues } from './lib/report'
 import utils from './lib/utils'
 
-const separator = '::'
+const separator = ' - '
 const storageKey = 'remix-mythx-plugin'
 const TOOL_NAME = 'remythx'
 const DEFAULT_ENV = 'https://api.mythx.io/v1/'
@@ -114,7 +114,7 @@ class App extends React.Component {
     const contractSet = new Set([...contractList, ...this.getContracts(data, target)])
     this.setState({
       compilations: { ...compilations, [target]: { source, data } },
-      selected: `${target}${separator}${list[0]}`,
+      selected: `${list[0]}${separator}${target}`,
       contractList: Array.from(contractSet),
       mapping: { ...mapping, ...fileMapping }
     })
@@ -123,7 +123,7 @@ class App extends React.Component {
   getContracts (data, target) {
     const { contracts = [] } = data
     var file = contracts[target] || {}
-    return Object.keys(file).map(x => `${target}${separator}${x}`)
+    return Object.keys(file).map(x => `${x}${separator}${target}`)
   }
 
   saveSettings (address, pwd, token, env) {
@@ -160,7 +160,7 @@ class App extends React.Component {
 
   analyze = async (mode = 'quick') => {
     const { compilations, selected, analyses, reports } = this.state
-    const [target] = selected.split(separator)
+    const [, target] = selected.split(separator)
 
     try {
       const mythx = this.createClient()
@@ -240,7 +240,7 @@ class App extends React.Component {
 
   getRequestData (mode) {
     const { compilations, selected } = this.state
-    const [target, contract] = selected.split(separator)
+    const [contract, target] = selected.split(separator)
     const { data = {}, source = {} } = compilations[target]
     const { contracts = [], sources = {} } = data
 

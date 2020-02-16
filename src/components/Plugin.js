@@ -21,7 +21,7 @@ import Report from './Report'
 import Log from './Log'
 import InfoIcon from './InfoIcon'
 
-const separator = '::'
+const separator = ' - '
 
 function Plugin ({
   compilations,
@@ -40,10 +40,10 @@ function Plugin ({
   log
 }) {
   const [isAnalyzeDropdownOpen, setIsAnalyzeDropdownOpen] = useState(false)
-  const [target] = selected.split(separator)
+  const [, target] = selected.split(separator)
 
   const isAnalyzeAllowed = (() => {
-    const [, contract] = selected.split(separator)
+    const [contract] = selected.split(separator)
 
     if (!compilations[target]) {
       return false
