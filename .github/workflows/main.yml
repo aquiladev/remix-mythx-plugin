@@ -36,4 +36,8 @@ jobs:
         ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: ./build
-
+    
+    - name: IPFS upload
+      uses: aquiladev/ipfs-upload@3537edc
+      with:
+        path: ./build
