@@ -37,7 +37,7 @@ jobs:
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: ./build
     
-    - name: IPFS upload
-      uses: aquiladev/ipfs-action@v0.0.2
+    - name: Upload to IPFS
+      uses: aquiladev/ipfs-action@v0.1.0-alpha
       with:
         path: ./build
