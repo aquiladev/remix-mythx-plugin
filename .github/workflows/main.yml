@@ -38,6 +38,6 @@ jobs:
         PUBLISH_DIR: ./build
     
     - name: IPFS upload
-      uses: aquiladev/ipfs-upload@0.0.1
+      uses: aquiladev/ipfs-upload@v0.0.1
       with:
         path: ./build
