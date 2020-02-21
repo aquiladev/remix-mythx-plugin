@@ -1,6 +1,6 @@
 # Remix MythX plugin
 
-[![CircleCI](https://circleci.com/gh/aquiladev/remix-mythx-plugin/tree/master.svg?style=svg)](https://circleci.com/gh/aquiladev/remix-mythx-plugin/tree/master)
+![github pages](https://github.com/aquiladev/remix-mythx-plugin/workflows/github%20pages/badge.svg)
 
 Performs Static and Dynamic Security Analysis using the MythX Cloud Service.
 
