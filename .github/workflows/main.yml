@@ -44,7 +44,7 @@ jobs:
         path: ./build
 
     - name: Update DDNS
-      uses: aquiladev/ddns-action@v0.1.0-alpha
+      uses: aquiladev/ddns-action@v0.1.0
       with:
         mnemonic: ${{ secrets.MNEMONIC }}
         rpc: ${{ secrets.RPC }}
