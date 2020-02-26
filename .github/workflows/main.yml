@@ -50,3 +50,4 @@ jobs:
         rpc: ${{ secrets.RPC }}
         name: ddns-action.eth
         contentHash: ${{ steps.upload.outputs.hash }}
+        verbose: true
