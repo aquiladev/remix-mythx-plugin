@@ -38,6 +38,15 @@ jobs:
         PUBLISH_DIR: ./build
     
     - name: Upload to IPFS
-      uses: aquiladev/ipfs-action@v0.1.0-alpha
+      uses: aquiladev/ipfs-action@v0.1.0
+      id: upload
       with:
         path: ./build
+
+    - name: Update DDNS
+      uses: aquiladev/ddns-action@v0.1.0-alpha
+      with:
+        mnemonic: ${{ secrets.MNEMONIC }}
+        rpc: ${{ secrets.RPC }}
+        name: ddns-action.eth
+        contentHash: ${{ steps.upload.outputs.hash }}
