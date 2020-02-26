@@ -42,6 +42,7 @@ jobs:
       id: upload
       with:
         path: ./build
+        verbose: true
 
     - name: Update DDNS
       uses: aquiladev/ddns-action@v0.1.0
