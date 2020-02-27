@@ -29,13 +29,6 @@ jobs:
     - run: npm ci
 
     - run: npm run build
-
-    - name: deploy
-      uses: peaceiris/actions-gh-pages@v2
-      env:
-        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: ./build
     
     - name: Upload to IPFS
       uses: aquiladev/ipfs-action@v0.1.1
@@ -52,3 +45,10 @@ jobs:
         name: ddns-action.eth
         contentHash: ${{ steps.upload.outputs.hash }}
         verbose: true
+
+    - name: Deploy gh-pages
+      uses: peaceiris/actions-gh-pages@v2
+      env:
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./build
