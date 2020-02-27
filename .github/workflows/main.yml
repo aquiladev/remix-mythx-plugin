@@ -38,7 +38,7 @@ jobs:
         PUBLISH_DIR: ./build
     
     - name: Upload to IPFS
-      uses: aquiladev/ipfs-action@v0.1.2
+      uses: aquiladev/ipfs-action@v0.1.1
       id: upload
       with:
         path: ./build
