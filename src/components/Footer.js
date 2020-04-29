@@ -21,14 +21,16 @@ function Footer ({ isPlugin, openSettings }) {
           ? <div className={'position-absolute w-100 pb-1 d-flex'} style={{ fontSize: 12, bottom: 0 }}>
             <div>
               <button
-                className='btn btn-link ml-1 p-0'
-                style={{ fontSize: 12, color: 'initial' }}
+                className='btn btn-light ml-1 p-1'
+                style={{ fontSize: 12 }}
                 onClick={openSettings}>
                 <FontAwesomeIcon icon={faCog} size='lg' className='mr-1' />
                 MythX Settings
               </button>
             </div>
-            <div className='ml-auto'>{links}</div>
+            <div className='ml-auto mr-1'>
+              <div className={'position-absolute'} style={{ right: 4, bottom: 4 }}>{links}</div>
+            </div>
           </div>
           : <div className={'position-absolute text-center w-100 pb-1 text-white'} style={{ fontSize: 12, bottom: 0 }}>
             {links}
