@@ -45,7 +45,7 @@ jobs:
         verbose: true
 
     - name: Update DDNS
-      uses: aquiladev/ddns-action@v0.1.0
+      uses: aquiladev/ddns-action@v0.1.1
       with:
         mnemonic: ${{ secrets.MNEMONIC }}
         rpc: ${{ secrets.RPC }}
