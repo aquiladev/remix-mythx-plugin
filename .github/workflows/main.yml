@@ -43,12 +43,3 @@ jobs:
       with:
         path: ./build
         verbose: true
-
-    - name: Update DDNS
-      uses: aquiladev/ddns-action@v0.1.1
-      with:
-        mnemonic: ${{ secrets.MNEMONIC }}
-        rpc: ${{ secrets.RPC }}
-        name: ddns-action.eth
-        contentHash: ${{ steps.upload.outputs.hash }}
-        verbose: true
