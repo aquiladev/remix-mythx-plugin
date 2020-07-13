@@ -200,6 +200,7 @@ class App extends React.Component {
 
         this.handleResult(compilations[target].source, issues)
       } else {
+        client.emit('statusChanged', { key: 'none' })
         this.setState({
           isAnalyzing: false,
           pluginActiveTab: 'log'
