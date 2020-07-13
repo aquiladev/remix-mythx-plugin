@@ -76,13 +76,6 @@ object-assign
  * LICENSE file in the root directory of this source tree.
  */
 
-/*!
- * Determine if an object is a Buffer
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
- */
-
 /**
  * [js-sha3]{@link https://github.com/emn178/js-sha3}
  *
