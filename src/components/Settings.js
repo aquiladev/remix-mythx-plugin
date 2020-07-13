@@ -18,7 +18,8 @@ function Settings ({
     address: inAddress,
     pwd: inPwd,
     token: inToken,
-    env: inEnv
+    env: inEnv,
+    isAdv: false
   })
 
   const toggle = tab => {
@@ -32,8 +33,18 @@ function Settings ({
 
   return (
     <div className='container'>
-      <div className='row'>
+      <div className='row pb-3'>
         <div className='col-12 text-right'>
+          <div class='custom-control custom-switch float-left'>
+            <input type='checkbox'
+              className='custom-control-input'
+              id='isAdv'
+              checked={state.isAdv}
+              onClick={(e) => { setState({ ...state, isAdv: e.target.checked }) }} />
+            <label className='custom-control-label' for='isAdv'>
+              { state.isAdv ? 'Advanced' : 'Basic' }
+            </label>
+          </div>
           <FontAwesomeIcon
             icon={faTimes}
             size='lg'
@@ -114,29 +125,35 @@ function Settings ({
           </TabContent>
         </div>
       </div>
+      { state.isAdv &&
+        <div className='row pb-3'>
+          <div className='col-md-6 offset-md-3'>
+            <div className='text-left'>
+              <h5>Environment</h5>
+            </div>
+            <div>
+              <div className='form-group'>
+                <label htmlFor='address'>Endpoint</label>
+                <input
+                  type='text'
+                  className='form-control'
+                  id='endpoint'
+                  placeholder='Endpoint'
+                  onChange={(e) => setState({ ...state, env: e.target.value })}
+                  defaultValue={state.env} />
+              </div>
+            </div>
+          </div>
+        </div>
+      }
       <div className='row pb-3'>
         <div className='col-md-6 offset-md-3'>
-          <div className='text-left'>
-            <h5>Environment</h5>
-          </div>
-          <div>
-            <div className='form-group'>
-              <label htmlFor='address'>Endpoint</label>
-              <input
-                type='text'
-                className='form-control'
-                id='endpoint'
-                placeholder='Endpoint'
-                onChange={(e) => setState({ ...state, env: e.target.value })}
-                defaultValue={state.env} />
-            </div>
-            <button
-              type='button'
-              className='btn btn-primary'
-              onClick={save}>
-              Save
-            </button>
-          </div>
+          <button
+            type='button'
+            className='btn btn-primary'
+            onClick={save}>
+            Save
+          </button>
         </div>
       </div>
     </div>
