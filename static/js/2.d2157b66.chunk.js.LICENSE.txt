@@ -38,8 +38,6 @@ object-assign
  * Released under the MIT License.
  */
 
-/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
-
 /**
  * CSS Vendor prefix detection and property feature testing.
  *
