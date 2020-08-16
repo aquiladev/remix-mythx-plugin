@@ -1,13 +1,21 @@
 {
   "name": "remix-mythx-plugin",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "homepage": ".",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint --max-warnings 0 **/*.js",
+    "release": "release-it --no-npm.publish --github.release"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.19",
     "@fortawesome/free-solid-svg-icons": "5.9.0",
     "@fortawesome/react-fontawesome": "0.1.4",
-    "@remixproject/plugin": "0.1.14",
+    "@remixproject/plugin": "0.1.18",
     "bootstrap": "4.3.1",
     "keccakjs": "0.2.3",
     "lodash": "4.17.19",
@@ -17,7 +25,7 @@
     "react-bs-notifier": "5.0.0",
     "react-copy-to-clipboard": "5.0.1",
     "react-dom": "16.8.6",
-    "react-scripts": "3.4.1",
+    "react-scripts": "3.4.3",
     "reactstrap": "8.0.0",
     "remix-lib": "0.4.30"
   },
@@ -29,15 +37,7 @@
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.0.1",
     "husky": "3.1.0",
-    "release-it": "12.3.6"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint --max-warnings 0 **/*.js",
-    "release": "release-it --no-npm.publish --github.release"
+    "release-it": "13.6.7"
   },
   "eslintConfig": {
     "extends": "react-app"

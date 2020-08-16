@@ -118,6 +118,8 @@ class App extends React.Component {
       contractList: Array.from(contractSet),
       mapping: { ...mapping, ...fileMapping }
     })
+
+    client.emit('statusChanged', { key: 'none' })
   }
 
   getContracts (data, target) {
@@ -162,6 +164,8 @@ class App extends React.Component {
     const { compilations, selected, analyses, reports } = this.state
     const [, target] = selected.split(separator)
 
+    client.emit('statusChanged', { key: 'loading', type: 'info', title: 'Analyzing...' })
+
     try {
       const mythx = this.createClient()
       const accessToken = await this.login(mythx)
@@ -196,12 +200,14 @@ class App extends React.Component {
 
         this.handleResult(compilations[target].source, issues)
       } else {
+        client.emit('statusChanged', { key: 'none' })
         this.setState({
           isAnalyzing: false,
           pluginActiveTab: 'log'
         })
       }
     } catch (err) {
+      client.emit('statusChanged', { key: 'failed', type: 'error', title: 'Failed' })
       this.setState({
         analyses: { ...analyses, [selected]: null },
         reports: {
@@ -276,6 +282,7 @@ class App extends React.Component {
     const uniqueIssues = formatIssues(data, mapping, result)
 
     if (uniqueIssues.length === 0) {
+      client.emit('statusChanged', { key: 'succeed', type: 'success', title: 'No errors/warnings found' })
       this.setState({
         reports: {
           ...reports,
@@ -285,6 +292,7 @@ class App extends React.Component {
         }
       })
     } else {
+      client.emit('statusChanged', { key: 'failed', type: 'warning', title: 'Errors/warnings found' })
       this.setState({
         reports: {
           ...reports,
@@ -310,6 +318,7 @@ class App extends React.Component {
   }
 
   clear () {
+    client.emit('statusChanged', { key: 'none' })
     this.setState({
       compilations: {},
       selected: '',
@@ -321,6 +330,11 @@ class App extends React.Component {
   }
 
   selectContract (selected) {
+    if (this.state.selected === selected) {
+      return
+    }
+
+    client.emit('statusChanged', { key: 'none' })
     this.setState({ selected })
   }
 
