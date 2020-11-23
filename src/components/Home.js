@@ -1,7 +1,5 @@
 import React from 'react'
 
-import 'bootstrap/dist/css/bootstrap.css'
-
 import Footer from './Footer'
 import remixLogo from './../images/remix.svg'
 import mythxLogo from './../images/mythx.png'
