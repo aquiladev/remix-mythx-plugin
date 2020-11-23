@@ -4,8 +4,6 @@ import { Client } from 'mythxjs'
 import keccak from 'keccakjs'
 import { Alert } from 'reactstrap'
 
-//import 'bootstrap/dist/css/bootstrap.css'
-
 import Plugin from './components/Plugin'
 import Settings from './components/Settings'
 import Footer from './components/Footer'
