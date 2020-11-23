@@ -4,7 +4,7 @@ import { Client } from 'mythxjs'
 import keccak from 'keccakjs'
 import { Alert } from 'reactstrap'
 
-import 'bootstrap/dist/css/bootstrap.css'
+//import 'bootstrap/dist/css/bootstrap.css'
 
 import Plugin from './components/Plugin'
 import Settings from './components/Settings'
@@ -56,7 +56,6 @@ class App extends React.Component {
     client = createIframeClient()
     client.onload(() => {
       this.setState({ pluginOpen: true })
-
       client.call('solidity', 'getCompilationResult')
         .then((result) => {
           if (!result) {
