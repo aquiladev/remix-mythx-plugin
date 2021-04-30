@@ -27,28 +27,12 @@ class App extends React.Component {
   constructor (props) {
     super(props)
 
-    const raw = localStorage.getItem(storageKey) || '{}'
-    const appState = JSON.parse(raw)
-
-    this.state = {
-      pluginOpen: false,
-      settingsOpen: false,
-      address: appState.address || TRIAL_CREDS.address,
-      pwd: appState.pwd || TRIAL_CREDS.pwd,
-      token: appState.token,
-      env: appState.env || DEFAULT_ENV,
-      jwt: null,
-      compilations: {},
-      selected: '',
-      contractList: [],
-      mapping: {},
-      isAnalyzing: false,
-      analyses: {},
-      reports: {},
-      alerts: [],
-      log: appState.log || [],
-      pluginActiveTab: 'log',
-      visibleTrialWarning: true
+    try {
+      this.state = this.initState()
+    } catch (error) {
+      this.state = {
+        error
+      }
     }
 
     client = createIframeClient()
@@ -88,6 +72,32 @@ class App extends React.Component {
     this.dismissAlert = this.dismissAlert.bind(this)
     this.openSettings = this.openSettings.bind(this)
     this.closeSettings = this.closeSettings.bind(this)
+  }
+
+  initState () {
+    const raw = localStorage.getItem(storageKey) || '{}'
+    const appState = JSON.parse(raw)
+
+    return {
+      pluginOpen: false,
+      settingsOpen: false,
+      address: appState.address || TRIAL_CREDS.address,
+      pwd: appState.pwd || TRIAL_CREDS.pwd,
+      token: appState.token,
+      env: appState.env || DEFAULT_ENV,
+      jwt: null,
+      compilations: {},
+      selected: '',
+      contractList: [],
+      mapping: {},
+      isAnalyzing: false,
+      analyses: {},
+      reports: {},
+      alerts: [],
+      log: appState.log || [],
+      pluginActiveTab: 'log',
+      visibleTrialWarning: true
+    }
   }
 
   processCompilation (target, source, data) {
@@ -226,11 +236,12 @@ class App extends React.Component {
   createClient () {
     const { address, pwd, token, jwt, env } = this.state
 
+    const environment = env.slice(-1) === '/' ? env.substr(0, env.length - 1) : env
     try {
-      return new Client(address, pwd, TOOL_NAME, env, token || jwt)
+      return new Client(address, pwd, TOOL_NAME, environment, token || jwt)
     } catch (err) {
       console.error(err)
-      return new Client(address, pwd, TOOL_NAME, env)
+      return new Client(address, pwd, TOOL_NAME, environment)
     }
   }
 
@@ -408,7 +419,15 @@ class App extends React.Component {
 
     return (
       <>
-        {content}
+        {
+          this.state.error
+            ? <div>Error on plugin startup:
+              <Alert color='danger'>{this.state.error.message}</Alert>
+              <p />
+              Take a look on <a href='https://github.com/aquiladev/remix-mythx-plugin#troubleshooting' target='_block' rel='noopener noreferrer'>troubleshooting</a>
+            </div>
+            : content
+        }
       </>
     )
   }
