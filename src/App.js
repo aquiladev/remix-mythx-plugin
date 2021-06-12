@@ -1,5 +1,5 @@
 import React from 'react'
-import { createIframeClient } from '@remixproject/plugin'
+import { createClient } from '@remixproject/plugin-iframe'
 import { Client } from 'mythxjs'
 import keccak from 'keccakjs'
 import { Alert } from 'reactstrap'
@@ -35,7 +35,7 @@ class App extends React.Component {
       }
     }
 
-    client = createIframeClient()
+    client = createClient()
     client.onload(() => {
       this.setState({ pluginOpen: true })
       client.call('solidity', 'getCompilationResult')
@@ -131,7 +131,7 @@ class App extends React.Component {
 
   getContracts (data, target) {
     const { contracts = [] } = data
-    var file = contracts[target] || {}
+    const file = contracts[target] || {}
     return Object.keys(file).map(x => `${x}${separator}${target}`)
   }
 
