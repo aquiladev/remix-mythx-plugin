@@ -18,7 +18,7 @@
     "@remixproject/plugin": "0.3.17",
     "@remixproject/plugin-iframe": "0.3.17",
     "keccakjs": "0.2.3",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "mythxjs": "1.4.0",
     "react": "16.8.6",
     "react-bs-notifier": "5.0.0",
